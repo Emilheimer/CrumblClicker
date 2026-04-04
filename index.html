@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crumbl Clicker - destroy your mouse</title>
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif; 
+            background: linear-gradient(135deg, #1e1e1e, #3a2b1f); 
+            color: white; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            /* Verhindert Markieren und Scrollen auf Handys */
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Responsive Layout für Handys */
+        @media (max-width: 800px) {
+            body { flex-direction: column; overflow-y: auto; }
+            #left, #middle, #right { width: 100% !important; border: none !important; height: auto !important; }
+            #left { padding-bottom: 40px; }
+            #cookie { width: 180px !important; }
+        }
+
+        #left { 
+            width: 40%; 
+            text-align: center; 
+            padding-top: 30px; 
+            border-right: 2px solid rgba(255,255,255,0.1); 
+            position: relative; 
+            background: rgba(0,0,0,0.2); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #middle, #right { 
+            width: 30%; 
+            padding: 20px; 
+            overflow-y: auto; 
+            background: rgba(0,0,0,0.4); 
+            z-index: 10;
+        }
+        #middle { border-right: 2px solid rgba(255,255,255,0.1); }
+        
+        #cookie { 
+            width: 240px; 
+            cursor: pointer; 
+            transition: transform 0.05s; 
+            z-index: 10; 
+            position: relative; 
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); 
+        }
+        .klick-anim { transform: scale(0.92) rotate(-3deg) !important; }
+        
+        .cursorIcon { 
+            position: absolute; 
+            height: 40px; 
+            width: auto; 
+            pointer-events: none; 
+            z-index: 5; 
+            transform-origin: center center; 
+        }
+        
+        .backgroundCookie { 
+            position: absolute; 
+            width: 35px; 
+            opacity: 0.15; 
+            pointer-events: none; 
+            z-index: 1;
+        }
+
+        .shopItem { 
+            background: rgba(60, 60, 60, 0.8); 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            border: 1px solid #444; 
+        }
+        
+        .shopEmoji {
+            font-size: 2.5em; 
+            margin-right: 15px;
+            width: 50px; 
+            text-align: center;
+        }
+        
+        .achItem { 
+            background: rgba(30, 30, 30, 0.9); 
+            padding: 8px; 
+            margin: 4px 0; 
+            border-radius: 6px; 
+            opacity: 0.15; 
+            filter: grayscale(1); 
+            transition: 0.5s; 
+            border: 1px solid #222; 
+            font-size: 0.85em; 
+        }
+        .achItem.unlocked { 
+            opacity: 1; 
+            filter: grayscale(0); 
+            border-color: #f1c40f; 
+            background: rgba(241, 196, 15, 0.15); 
+        }
+        
+        button { 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer; 
+            background: #e67e22; 
+            color: white; 
+            font-weight: bold; 
+        }
+        
+        .goldenCookie { 
+            position: absolute; 
+            width: 80px; 
+            cursor: pointer; 
+            z-index: 1000; 
+            animation: pulse 1s infinite alternate; 
+            filter: drop-shadow(0 0 25px gold); 
+        }
+        @keyframes pulse { from {transform: scale(1);} to {transform: scale(1.2) rotate(10deg);} }
+        
+        #achievementPopup { 
+            position: fixed; 
+            top: -120px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); 
+            color: black; 
+            padding: 15px 30px; 
+            border-radius: 0 0 20px 20px; 
+            font-weight: bold; 
+            z-index: 3000; 
+            transition: 0.6s; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            width: 80%;
+            text-align: center;
+        }
+        
+        .partikel { 
+            position: absolute; 
+            color: #f1c40f; 
+            font-weight: bold; 
+            pointer-events: none; 
+            animation: fly 0.8s forwards; 
+            text-shadow: 2px 2px 4px black;
+            font-size: 1.8em;
+            z-index: 5000; 
+        }
+        @keyframes fly { 0% {opacity:1; transform:translateY(0) scale(1.2);} 100% {opacity:0; transform:translateY(-150px) scale(1.8);} }
+    </style>
+</head>
+<body>
+
+<div id="achievementPopup">🏆 Achievement!</div>
+
+<div id="left">
+    <h1>🍪 Crumbl Clicker</h1>
+    <h2 id="cookieCountDisplay" style="font-size: 3.5em; margin: 0;">0</h2>
+    <p>Klick: <span id="cpcDisplay">1</span> | ⚡ CPS: <span id="cpsDisplay">0</span></p>
+    <div style="position: relative; margin-top: 40px;">
+        <img id="cookie" src="cookie.png" onmousedown="cookieKlick(event)" ontouchstart="cookieKlick(event)">
+    </div>
+</div>
+
+<div id="middle">
+    <h2>🏪 Shop</h2>
+    <button onclick="resetGame()" style="background: #c0392b; width: 100%; margin-bottom: 20px;">🔄 Reset</button>
+    <div id="shopContainer"></div>
+</div>
+
+<div id="right">
+    <h2>🏆 Erfolge (<span id="achCount">0</span>/75)</h2>
+    <div id="achContainer"></div>
+</div>
+
+<script>
+const clickSound = new Audio("click.mp3");
+const achSound = new Audio("achieve.mp3");
+
+let cookies = 0;
+let totalCookiesEver = 0;
+let totalClicks = 0;
+let cpcBase = 1;
+let multiplier = 1;
+let winkel = 0;
+let unlockedAchs = new Set();
+
+const shop = {
+    cursorUpgrade: {name: "Klick-Training", kosten: 50, cps: 0, anzahl: 0, emoji: "💪"},
+    cursor: {name: "Cursor", kosten: 15, cps: 0.8, anzahl: 0, emoji: "🖱️"},
+    grandma: {name: "Oma", kosten: 100, cps: 4, anzahl: 0, emoji: "👵"},
+    farm: {name: "Farm", kosten: 1100, cps: 15, anzahl: 0, emoji: "🚜"},
+    mine: {name: "Mine", kosten: 12000, cps: 60, anzahl: 0, emoji: "⛏️"},
+    factory: {name: "Fabrik", kosten: 130000, cps: 300, anzahl: 0, emoji: "🏭"},
+    bank: {name: "Bank", kosten: 1400000, cps: 1600, anzahl: 0, emoji: "🏦"},
+    temple: {name: "Tempel", kosten: 20000000, cps: 8500, anzahl: 0, emoji: "🛕"},
+    ship: {name: "Raumschiff", kosten: 330000000, cps: 50000, anzahl: 0, emoji: "🚀"},
+    timeMachine: {name: "Zeitmaschine", kosten: 5100000000, cps: 250000, anzahl: 0, emoji: "⏳"},
+    portal: {name: "Keks-Portal", kosten: 75000000000, cps: 1500000, anzahl: 0, emoji: "🌀"},
+    reactor: {name: "Keks-Reaktor", kosten: 900000000000, cps: 10000000, anzahl: 0, emoji: "☢️"},
+    god: {name: "Keks-Gott", kosten: 15000000000000, cps: 80000000, anzahl: 0, emoji: "✨"}
+};
+
+const achievements = [];
+function createAchievements() {
+    const cT = [1, 100, 1000, 10000, 100000, 1000000, 100000000];
+    cT.forEach((t, i) => achievements.push({id: i+1, name: "Sammler "+(i+1), desc: t.toLocaleString()+" Kekse", cond: () => totalCookiesEver >= t}));
+    Object.keys(shop).forEach((key, i) => {
+        achievements.push({id: 20+i, name: shop[key].name+" Fan", desc: "Besitze 10 "+shop[key].name, cond: () => shop[key].anzahl >= 10});
+    });
+}
+createAchievements();
+
+function init() {
+    const shopCont = document.getElementById("shopContainer");
+    for(let key in shop) {
+        let item = shop[key];
+        shopCont.innerHTML += `<div class="shopItem">
+            <span class="shopEmoji">${item.emoji}</span>
+            <div style="flex-grow:1"><strong>${item.name}</strong><br><span id="${key}Price">${item.kosten.toLocaleString()}</span></div>
+            <div><button onclick="kaufen('${key}')">Kaufen</button></div><div style="margin-left:10px" id="${key}Anz">0</div></div>`;
+    }
+    const achCont = document.getElementById("achContainer");
+    achievements.forEach(a => { achCont.innerHTML += `<div id="ach-${a.id}" class="achItem"><strong>${a.name}</strong><br>${a.desc}</div>`; });
+    load();
+}
+
+function cookieKlick(e) {
+    if(e) e.preventDefault(); // Verhindert Doppelklick-Zoom
+    let power = cpcBase * multiplier;
+    cookies += power; totalCookiesEver += power; totalClicks++;
+    clickSound.currentTime = 0; clickSound.play().catch(()=>{});
+    
+    document.getElementById("cookie").classList.add("klick-anim");
+    setTimeout(()=>document.getElementById("cookie").classList.remove("klick-anim"), 50);
+    
+    let x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+    let y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+    spawnPartikel(x, y, "+" + power);
+    updateUI();
+}
+
+function kaufen(key) {
+    let item = shop[key];
+    if(cookies >= item.kosten) {
+        cookies -= item.kosten; item.anzahl++;
+        item.kosten *= (key === "cursorUpgrade" ? 2.3 : 1.15);
+        if(key === "cursorUpgrade") cpcBase++;
+        updateUI();
+    }
+}
+
+function getCps() { return Object.values(shop).reduce((a, b) => a + (b.anzahl * b.cps), 0); }
+
+function updateUI() {
+    document.getElementById("cookieCountDisplay").innerText = Math.floor(cookies).toLocaleString();
+    document.getElementById("cpcDisplay").innerText = (cpcBase * multiplier).toLocaleString();
+    document.getElementById("cpsDisplay").innerText = Math.floor(getCps()).toLocaleString();
+    document.getElementById("achCount").innerText = unlockedAchs.size;
+    for(let key in shop) {
+        document.getElementById(key + "Anz").innerText = shop[key].anzahl;
+        document.getElementById(key + "Price").innerText = Math.floor(shop[key].kosten).toLocaleString();
+    }
+}
+
+function spawnPartikel(x, y, txt) {
+    let p = document.createElement("div"); p.className = "partikel"; p.innerText = txt;
+    p.style.left = x + "px"; p.style.top = y + "px";
+    document.body.appendChild(p); setTimeout(()=>p.remove(), 800);
+}
+
+function checkAchs() {
+    achievements.forEach(a => {
+        if(!unlockedAchs.has(a.id) && a.cond()) {
+            unlockedAchs.add(a.id);
+            if(document.getElementById("ach-" + a.id)) document.getElementById("ach-" + a.id).classList.add("unlocked");
+            let pop = document.getElementById("achievementPopup");
+            pop.innerText = "🏆 Achievement: " + a.name; pop.style.top = "0px";
+            achSound.play().catch(()=>{});
+            setTimeout(() => pop.style.top = "-120px", 4000);
+        }
+    });
+}
+
+function resetGame() { if(confirm("Spielstand wirklich löschen?")) { localStorage.clear(); location.reload(); } }
+
+setInterval(() => {
+    let gain = getCps() / 30; cookies += gain; totalCookiesEver += gain;
+    checkAchs(); updateUI();
+}, 1000/30);
+
+function save() { 
+    localStorage.setItem("cookie_Save_Mobile", JSON.stringify({
+        cookies, totalCookiesEver, totalClicks, cpcBase, 
+        shopAnzahlen: Object.keys(shop).map(k => ({k, a: shop[k].anzahl, p: shop[k].kosten})),
+        unlockedAchs: Array.from(unlockedAchs)
+    })); 
+}
+function load() {
+    let raw = localStorage.getItem("cookie_Save_Mobile");
+    if(!raw) return;
+    let d = JSON.parse(raw);
+    cookies = d.cookies || 0; totalCookiesEver = d.totalCookiesEver || 0;
+    totalClicks = d.totalClicks || 0; cpcBase = d.cpcBase || 1;
+    unlockedAchs = new Set(d.unlockedAchs || []);
+    if(d.shopAnzahlen) d.shopAnzahlen.forEach(item => {
+        if(shop[item.k]) { shop[item.k].anzahl = item.a; shop[item.k].kosten = item.p; }
+    });
+}
+setInterval(save, 5000);
+init();
+</script>
+</body>
+</html>

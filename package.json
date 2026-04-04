@@ -1,0 +1,48 @@
+{
+  "name": "crumblclicker",
+  "productName": "CrumblClicker",
+  "version": "1.0.0",
+  "description": "Das ultimative Keks-Abenteuer",
+  "main": "main.js",
+  "homepage": "https://example.com",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --linux",
+    "dist-win": "electron-builder --windows"
+  },
+  "author": "Emilio Kudling",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^latest",
+    "electron-builder": "^latest"
+  },
+  "build": {
+    "appId": "com.crumbl.clicker",
+    "productName": "CrumblClicker",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Game",
+      "executableName": "crumblclicker",
+      "desktop": {
+        "entry": {
+          "Name": "CrumblClicker",
+          "Type": "Application",
+          "StartupWMClass": "crumblclicker"
+        }
+      },
+      "icon": "icon.png"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    },
+    "deb": {
+      "priority": "optional",
+      "maintainer": "Emilio Kudling <kudlingemilio@gmail.com>"
+    }
+  }
+}
