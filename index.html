@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker - destroy your mouse</title>
+    <title>Crumbl Clicker - Balanced Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
 
     <style>
         body { 
@@ -19,149 +18,45 @@
             display: flex; 
             height: 100vh; 
             overflow: hidden; 
-            /* Verhindert Markieren und Scrollen auf Handys */
             touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        /* Responsive Layout für Handys */
         @media (max-width: 800px) {
-            body { flex-direction: column; overflow-y: auto; }
-            #left, #middle, #right { width: 100% !important; border: none !important; height: auto !important; }
-            #left { padding-bottom: 40px; }
-            #cookie { width: 180px !important; }
+            body { flex-direction: column; overflow-x: hidden; overflow-y: auto; height: 100vh; }
+            #left { 
+                width: 100% !important; height: 320px; position: sticky; top: 0; z-index: 5; 
+                background: linear-gradient(135deg, #1e1e1e, #3a2b1f); border: none !important;
+                flex-shrink: 0; padding-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            }
+            #middle, #right { 
+                width: 100% !important; position: relative; z-index: 10; 
+                background: #251a12; box-shadow: 0 -20px 40px rgba(0,0,0,1); 
+                min-height: 60vh; padding: 20px; border: none !important; overflow-y: visible; 
+            }
+            #cookie { width: 170px !important; }
         }
 
-        #left { 
-            width: 40%; 
-            text-align: center; 
-            padding-top: 30px; 
-            border-right: 2px solid rgba(255,255,255,0.1); 
-            position: relative; 
-            background: rgba(0,0,0,0.2); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #middle, #right { 
-            width: 30%; 
-            padding: 20px; 
-            overflow-y: auto; 
-            background: rgba(0,0,0,0.4); 
-            z-index: 10;
-        }
+        #left { width: 40%; text-align: center; padding-top: 30px; border-right: 2px solid rgba(255,255,255,0.1); position: relative; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; }
+        #middle, #right { width: 30%; padding: 20px; overflow-y: auto; background: rgba(0,0,0,0.4); z-index: 10; }
         #middle { border-right: 2px solid rgba(255,255,255,0.1); }
         
-        #cookie { 
-            width: 240px; 
-            cursor: pointer; 
-            transition: transform 0.05s; 
-            z-index: 10; 
-            position: relative; 
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); 
-        }
+        #cookie { width: 240px; cursor: pointer; transition: transform 0.05s; z-index: 10; position: relative; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); }
         .klick-anim { transform: scale(0.92) rotate(-3deg) !important; }
         
-        .cursorIcon { 
-            position: absolute; 
-            height: 40px; 
-            width: auto; 
-            pointer-events: none; 
-            z-index: 5; 
-            transform-origin: center center; 
-        }
+        .shopItem { background: rgba(60, 60, 60, 0.8); padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #444; }
+        .shopEmoji { font-size: 2.5em; margin-right: 15px; width: 50px; text-align: center; }
         
-        .backgroundCookie { 
-            position: absolute; 
-            width: 35px; 
-            opacity: 0.15; 
-            pointer-events: none; 
-            z-index: 1;
-        }
+        .achItem { background: rgba(30, 30, 30, 0.9); padding: 8px; margin: 4px 0; border-radius: 6px; opacity: 0.15; filter: grayscale(1); transition: 0.5s; border: 1px solid #222; font-size: 0.85em; }
+        .achItem.unlocked { opacity: 1; filter: grayscale(0); border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
+        
+        button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; background: #e67e22; color: white; font-weight: bold; }
+        .btn-off { background: #7f8c8d; }
+        .btn-on { background: #27ae60; }
 
-        .shopItem { 
-            background: rgba(60, 60, 60, 0.8); 
-            padding: 15px; 
-            margin: 10px 0; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            border: 1px solid #444; 
-        }
-        
-        .shopEmoji {
-            font-size: 2.5em; 
-            margin-right: 15px;
-            width: 50px; 
-            text-align: center;
-        }
-        
-        .achItem { 
-            background: rgba(30, 30, 30, 0.9); 
-            padding: 8px; 
-            margin: 4px 0; 
-            border-radius: 6px; 
-            opacity: 0.15; 
-            filter: grayscale(1); 
-            transition: 0.5s; 
-            border: 1px solid #222; 
-            font-size: 0.85em; 
-        }
-        .achItem.unlocked { 
-            opacity: 1; 
-            filter: grayscale(0); 
-            border-color: #f1c40f; 
-            background: rgba(241, 196, 15, 0.15); 
-        }
-        
-        button { 
-            padding: 8px 14px; 
-            border-radius: 6px; 
-            border: none; 
-            cursor: pointer; 
-            background: #e67e22; 
-            color: white; 
-            font-weight: bold; 
-        }
-        
-        .goldenCookie { 
-            position: absolute; 
-            width: 80px; 
-            cursor: pointer; 
-            z-index: 1000; 
-            animation: pulse 1s infinite alternate; 
-            filter: drop-shadow(0 0 25px gold); 
-        }
-        @keyframes pulse { from {transform: scale(1);} to {transform: scale(1.2) rotate(10deg);} }
-        
-        #achievementPopup { 
-            position: fixed; 
-            top: -120px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d); 
-            color: black; 
-            padding: 15px 30px; 
-            border-radius: 0 0 20px 20px; 
-            font-weight: bold; 
-            z-index: 3000; 
-            transition: 0.6s; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            width: 80%;
-            text-align: center;
-        }
-        
-        .partikel { 
-            position: absolute; 
-            color: #f1c40f; 
-            font-weight: bold; 
-            pointer-events: none; 
-            animation: fly 0.8s forwards; 
-            text-shadow: 2px 2px 4px black;
-            font-size: 1.8em;
-            z-index: 5000; 
-        }
+        #achievementPopup { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: black; padding: 15px 30px; border-radius: 0 0 20px 20px; font-weight: bold; z-index: 5000; transition: 0.6s; box-shadow: 0 5px 20px rgba(0,0,0,0.5); width: 80%; text-align: center; }
+        .partikel { position: fixed; color: #f1c40f; font-weight: bold; pointer-events: none; animation: fly 0.8s forwards; text-shadow: 2px 2px 4px black; font-size: 1.8em; z-index: 6000; }
         @keyframes fly { 0% {opacity:1; transform:translateY(0) scale(1.2);} 100% {opacity:0; transform:translateY(-150px) scale(1.8);} }
     </style>
 </head>
@@ -174,13 +69,16 @@
     <h2 id="cookieCountDisplay" style="font-size: 3.5em; margin: 0;">0</h2>
     <p>Klick: <span id="cpcDisplay">1</span> | ⚡ CPS: <span id="cpsDisplay">0</span></p>
     <div style="position: relative; margin-top: 40px;">
-        <img id="cookie" src="cookie.png" onmousedown="cookieKlick(event)" ontouchstart="cookieKlick(event)">
+        <img id="cookie" src="cookie.png" onmousedown="handleFirstClick(event)" ontouchstart="handleFirstClick(event)">
     </div>
 </div>
 
 <div id="middle">
     <h2>🏪 Shop</h2>
-    <button onclick="resetGame()" style="background: #c0392b; width: 100%; margin-bottom: 20px;">🔄 Reset</button>
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button id="offlineBtn" onclick="toggleOfflineMode()" class="btn-off" style="flex: 1;">💤 Offline-Modus: AUS</button>
+        <button onclick="resetGame()" style="background: #c0392b;">🔄 Reset</button>
+    </div>
     <div id="shopContainer"></div>
 </div>
 
@@ -190,16 +88,32 @@
 </div>
 
 <script>
-const clickSound = new Audio("click.mp3");
-const achSound = new Audio("achieve.mp3");
+let clickSound = new Audio("click.mp3");
+let achSound = new Audio("achieve.mp3");
+let audioInitialized = false;
+
+function handleFirstClick(e) {
+    if (!audioInitialized) {
+        clickSound.play().then(() => {
+            clickSound.pause();
+            clickSound.currentTime = 0;
+            achSound.play().then(() => {
+                achSound.pause();
+                achSound.currentTime = 0;
+                audioInitialized = true;
+            });
+        }).catch(() => {});
+    }
+    cookieKlick(e);
+}
 
 let cookies = 0;
 let totalCookiesEver = 0;
 let totalClicks = 0;
 let cpcBase = 1;
 let multiplier = 1;
-let winkel = 0;
 let unlockedAchs = new Set();
+let offlineModeActive = false;
 
 const shop = {
     cursorUpgrade: {name: "Klick-Training", kosten: 50, cps: 0, anzahl: 0, emoji: "💪"},
@@ -219,7 +133,7 @@ const shop = {
 
 const achievements = [];
 function createAchievements() {
-    const cT = [1, 100, 1000, 10000, 100000, 1000000, 100000000];
+    const cT = [1, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000];
     cT.forEach((t, i) => achievements.push({id: i+1, name: "Sammler "+(i+1), desc: t.toLocaleString()+" Kekse", cond: () => totalCookiesEver >= t}));
     Object.keys(shop).forEach((key, i) => {
         achievements.push({id: 20+i, name: shop[key].name+" Fan", desc: "Besitze 10 "+shop[key].name, cond: () => shop[key].anzahl >= 10});
@@ -238,20 +152,34 @@ function init() {
     }
     const achCont = document.getElementById("achContainer");
     achievements.forEach(a => { achCont.innerHTML += `<div id="ach-${a.id}" class="achItem"><strong>${a.name}</strong><br>${a.desc}</div>`; });
-    load();
+    
+    load(); 
+
+    unlockedAchs.forEach(id => {
+        const el = document.getElementById("ach-" + id);
+        if(el) el.classList.add("unlocked");
+    });
+    
+    updateUI();
+}
+
+function toggleOfflineMode() {
+    offlineModeActive = !offlineModeActive;
+    updateUI();
+    save();
 }
 
 function cookieKlick(e) {
-    if(e) e.preventDefault(); // Verhindert Doppelklick-Zoom
+    if(e && e.type === 'touchstart') e.preventDefault(); 
     let power = cpcBase * multiplier;
     cookies += power; totalCookiesEver += power; totalClicks++;
-    clickSound.currentTime = 0; clickSound.play().catch(()=>{});
-    
-    document.getElementById("cookie").classList.add("klick-anim");
-    setTimeout(()=>document.getElementById("cookie").classList.remove("klick-anim"), 50);
-    
-    let x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-    let y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+    clickSound.currentTime = 0; 
+    clickSound.play().catch(()=>{});
+    const cookieEl = document.getElementById("cookie");
+    cookieEl.classList.add("klick-anim");
+    setTimeout(()=>cookieEl.classList.remove("klick-anim"), 50);
+    let x = (e.touches) ? e.touches[0].clientX : e.clientX;
+    let y = (e.touches) ? e.touches[0].clientY : e.clientY;
     spawnPartikel(x, y, "+" + power);
     updateUI();
 }
@@ -273,6 +201,11 @@ function updateUI() {
     document.getElementById("cpcDisplay").innerText = (cpcBase * multiplier).toLocaleString();
     document.getElementById("cpsDisplay").innerText = Math.floor(getCps()).toLocaleString();
     document.getElementById("achCount").innerText = unlockedAchs.size;
+    const offBtn = document.getElementById("offlineBtn");
+    if(offBtn) {
+        offBtn.innerText = offlineModeActive ? "💤 Offline: AN" : "💤 Offline: AUS";
+        offBtn.className = offlineModeActive ? "btn-on" : "btn-off";
+    }
     for(let key in shop) {
         document.getElementById(key + "Anz").innerText = shop[key].anzahl;
         document.getElementById(key + "Price").innerText = Math.floor(shop[key].kosten).toLocaleString();
@@ -289,13 +222,18 @@ function checkAchs() {
     achievements.forEach(a => {
         if(!unlockedAchs.has(a.id) && a.cond()) {
             unlockedAchs.add(a.id);
-            if(document.getElementById("ach-" + a.id)) document.getElementById("ach-" + a.id).classList.add("unlocked");
-            let pop = document.getElementById("achievementPopup");
-            pop.innerText = "🏆 Achievement: " + a.name; pop.style.top = "0px";
-            achSound.play().catch(()=>{});
-            setTimeout(() => pop.style.top = "-120px", 4000);
+            const el = document.getElementById("ach-" + a.id);
+            if(el) el.classList.add("unlocked");
+            showPopup("🏆 Achievement: " + a.name);
         }
     });
+}
+
+function showPopup(txt) {
+    let pop = document.getElementById("achievementPopup");
+    pop.innerText = txt; pop.style.top = "0px";
+    if (audioInitialized) achSound.play().catch(()=>{});
+    setTimeout(() => pop.style.top = "-120px", 4000);
 }
 
 function resetGame() { if(confirm("Spielstand wirklich löschen?")) { localStorage.clear(); location.reload(); } }
@@ -306,22 +244,42 @@ setInterval(() => {
 }, 1000/30);
 
 function save() { 
-    localStorage.setItem("cookie_Save_Mobile", JSON.stringify({
-        cookies, totalCookiesEver, totalClicks, cpcBase, 
+    localStorage.setItem("cookie_Save_Balanced", JSON.stringify({
+        cookies, totalCookiesEver, totalClicks, cpcBase, offlineModeActive,
+        lastSaveTime: Date.now(),
         shopAnzahlen: Object.keys(shop).map(k => ({k, a: shop[k].anzahl, p: shop[k].kosten})),
         unlockedAchs: Array.from(unlockedAchs)
     })); 
 }
+
 function load() {
-    let raw = localStorage.getItem("cookie_Save_Mobile");
+    let raw = localStorage.getItem("cookie_Save_Balanced");
     if(!raw) return;
     let d = JSON.parse(raw);
     cookies = d.cookies || 0; totalCookiesEver = d.totalCookiesEver || 0;
     totalClicks = d.totalClicks || 0; cpcBase = d.cpcBase || 1;
+    offlineModeActive = d.offlineModeActive || false;
     unlockedAchs = new Set(d.unlockedAchs || []);
     if(d.shopAnzahlen) d.shopAnzahlen.forEach(item => {
         if(shop[item.k]) { shop[item.k].anzahl = item.a; shop[item.k].kosten = item.p; }
     });
+
+    if(offlineModeActive && d.lastSaveTime) {
+        let diffSec = Math.floor((Date.now() - d.lastSaveTime) / 1000);
+        if(diffSec > 10) { 
+            let idleGain = diffSec * (getCps() / 2);
+            
+            // LIMIT: Max 10.000 pro Stunde (2.77 pro Sekunde)
+            let maxGain = diffSec * (10000 / 3600);
+            if(idleGain > maxGain) idleGain = maxGain;
+
+            if(idleGain > 0) {
+                cookies += idleGain;
+                totalCookiesEver += idleGain;
+                setTimeout(() => showPopup(`💤 Willkommen zurück! Deine Arbeiter haben ${Math.floor(idleGain).toLocaleString()} Kekse gebacken (Max: 10k/Std).`), 1500);
+            }
+        }
+    }
 }
 setInterval(save, 5000);
 init();
