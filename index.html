@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker - Mobile Fix</title>
+    <title>Crumbl Clicker - Scroll Fix</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        /* Grund-Layout */
         body { 
             margin: 0; 
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif; 
@@ -24,63 +23,70 @@
             touch-action: manipulation;
         }
 
-        /* --- DESKTOP ANSICHT --- */
-        #left { width: 40%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-right: 2px solid rgba(255,255,255,0.1); }
+        /* --- DESKTOP --- */
+        #left { width: 40%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-right: 2px solid rgba(255,255,255,0.1); z-index: 10; }
         #middle, #right { width: 30%; padding: 20px; overflow-y: auto; background: rgba(0,0,0,0.5); }
         #middle { border-right: 2px solid rgba(255,255,255,0.1); }
 
-        /* --- MOBILE ANSICHT (FIX) --- */
+        /* --- MOBILE (ULTIMATE SCROLL FIX) --- */
         @media (max-width: 800px) {
             body { 
-                flex-direction: column; 
-                overflow-y: auto; /* Erlaubt das Scrollen der gesamten Seite */
+                display: block; 
                 overflow-x: hidden;
-                display: block; /* Wichtig für das Scroll-Verhalten */
+                overflow-y: auto; /* Gesamte Seite scrollbar */
+                height: 100%;
             }
 
             #left { 
                 width: 100% !important; 
-                height: 350px; 
-                position: sticky; 
+                height: 300px !important; /* Feste Höhe für den Keks-Teil */
+                position: fixed; /* Bleibt IMMER oben am Bildschirm */
                 top: 0; 
-                z-index: 100; /* Immer ganz oben */
-                background: linear-gradient(180deg, #2c1f16 0%, #1e1e1e 100%);
+                left: 0;
+                z-index: 100; /* Ganz vorne */
+                background: #2c1f16;
                 box-shadow: 0 5px 20px rgba(0,0,0,0.8);
                 border: none;
-                padding-bottom: 20px;
+                justify-content: center;
+                padding: 0;
             }
 
-            #middle, #right { 
+            #middle { 
+                margin-top: 300px; /* Platzhalter, damit der Shop unter dem Keks startet */
                 width: 100% !important; 
-                height: auto !important;
-                min-height: 50vh;
-                overflow-y: visible; /* Deaktiviert internes Scrollen */
-                position: relative; 
-                z-index: 10; 
-                background: #251a12; 
-                padding: 20px;
-                box-sizing: border-box;
+                min-height: auto;
+                overflow-y: visible; 
+                position: relative;
+                z-index: 10;
+                background: #251a12;
                 border: none;
-                box-shadow: 0 -10px 30px rgba(0,0,0,0.5); /* Schatten nach oben */
             }
 
-            h1 { font-size: 1.5rem; margin-top: 10px; }
-            #cookie { width: 160px !important; }
+            #right {
+                width: 100% !important;
+                min-height: 400px;
+                overflow-y: visible;
+                position: relative;
+                z-index: 10;
+                background: #1e150f;
+                border: none;
+                padding-bottom: 50px;
+            }
+
+            #cookie { width: 140px !important; }
+            h1 { font-size: 1.2rem; margin: 5px; }
+            h2 { margin-top: 10px; }
         }
 
-        /* Keks & Animationen */
         #cookie { width: 220px; cursor: pointer; transition: transform 0.05s; filter: drop-shadow(0 0 15px rgba(0,0,0,0.5)); }
         .klick-anim { transform: scale(0.92) rotate(-3deg); }
 
-        /* Shop Items */
         .shopItem { background: rgba(60, 60, 60, 0.8); padding: 12px; margin: 10px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #444; }
-        .shopEmoji { font-size: 2.5em; margin-right: 15px; width: 50px; text-align: center; }
+        .shopEmoji { font-size: 2.2em; margin-right: 15px; width: 45px; text-align: center; }
         
-        /* Achievements */
         .achItem { background: rgba(30, 30, 30, 0.9); padding: 8px; margin: 5px 0; border-radius: 6px; opacity: 0.2; filter: grayscale(1); transition: 0.5s; border: 1px solid #222; }
         .achItem.unlocked { opacity: 1; filter: grayscale(0); border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
 
-        /* Buttons */
         button { padding: 10px 15px; border-radius: 8px; border: none; cursor: pointer; background: #e67e22; color: white; font-weight: bold; }
         .btn-off { background: #7f8c8d; }
         .btn-on { background: #27ae60; }
@@ -96,8 +102,8 @@
 
 <div id="left">
     <h1>🍪 Crumbl Clicker</h1>
-    <h2 id="cookieCountDisplay" style="font-size: 3em; margin: 5px 0;">0</h2>
-    <p>Klick: <span id="cpcDisplay">1</span> | ⚡ CPS: <span id="cpsDisplay">0</span></p>
+    <h2 id="cookieCountDisplay" style="font-size: 2.8em; margin: 2px 0;">0</h2>
+    <p style="margin: 5px;">Klick: <span id="cpcDisplay">1</span> | ⚡ CPS: <span id="cpsDisplay">0</span></p>
     <img id="cookie" src="cookie.png" onmousedown="handleFirstClick(event)" ontouchstart="handleFirstClick(event)">
 </div>
 
@@ -123,11 +129,9 @@ let audioInitialized = false;
 function handleFirstClick(e) {
     if (!audioInitialized) {
         clickSound.play().then(() => {
-            clickSound.pause();
-            clickSound.currentTime = 0;
+            clickSound.pause(); clickSound.currentTime = 0;
             achSound.play().then(() => {
-                achSound.pause();
-                achSound.currentTime = 0;
+                achSound.pause(); achSound.currentTime = 0;
                 audioInitialized = true;
             });
         }).catch(() => {});
@@ -269,7 +273,7 @@ setInterval(() => {
 }, 1000/30);
 
 function save() { 
-    localStorage.setItem("cookie_Save_MobileFix", JSON.stringify({
+    localStorage.setItem("cookie_Save_UltimateScroll", JSON.stringify({
         cookies, totalCookiesEver, totalClicks, cpcBase, offlineModeActive,
         lastSaveTime: Date.now(),
         shopAnzahlen: Object.keys(shop).map(k => ({k, a: shop[k].anzahl, p: shop[k].kosten})),
@@ -278,7 +282,7 @@ function save() {
 }
 
 function load() {
-    let raw = localStorage.getItem("cookie_Save_MobileFix");
+    let raw = localStorage.getItem("cookie_Save_UltimateScroll");
     if(!raw) return;
     let d = JSON.parse(raw);
     cookies = d.cookies || 0; totalCookiesEver = d.totalCookiesEver || 0;
@@ -297,7 +301,7 @@ function load() {
             if(idleGain > maxGain) idleGain = maxGain;
             if(idleGain > 0) {
                 cookies += idleGain; totalCookiesEver += idleGain;
-                setTimeout(() => showPopup(`💤 Willkommen zurück! +${Math.floor(idleGain).toLocaleString()} Kekse`), 1500);
+                setTimeout(() => showPopup(`💤 +${Math.floor(idleGain).toLocaleString()} Kekse`), 1500);
             }
         }
     }
