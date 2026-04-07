@@ -3,61 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker - Balanced Edition</title>
+    <title>Crumbl Clicker - Mobile Fix</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
+        /* Grund-Layout */
         body { 
             margin: 0; 
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif; 
-            background: linear-gradient(135deg, #1e1e1e, #3a2b1f); 
+            background: #1e1e1e; 
             color: white; 
             display: flex; 
             height: 100vh; 
             overflow: hidden; 
-            touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
-        @media (max-width: 800px) {
-            body { flex-direction: column; overflow-x: hidden; overflow-y: auto; height: 100vh; }
-            #left { 
-                width: 100% !important; height: 320px; position: sticky; top: 0; z-index: 5; 
-                background: linear-gradient(135deg, #1e1e1e, #3a2b1f); border: none !important;
-                flex-shrink: 0; padding-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            }
-            #middle, #right { 
-                width: 100% !important; position: relative; z-index: 10; 
-                background: #251a12; box-shadow: 0 -20px 40px rgba(0,0,0,1); 
-                min-height: 60vh; padding: 20px; border: none !important; overflow-y: visible; 
-            }
-            #cookie { width: 170px !important; }
-        }
-
-        #left { width: 40%; text-align: center; padding-top: 30px; border-right: 2px solid rgba(255,255,255,0.1); position: relative; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; }
-        #middle, #right { width: 30%; padding: 20px; overflow-y: auto; background: rgba(0,0,0,0.4); z-index: 10; }
+        /* --- DESKTOP ANSICHT --- */
+        #left { width: 40%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-right: 2px solid rgba(255,255,255,0.1); }
+        #middle, #right { width: 30%; padding: 20px; overflow-y: auto; background: rgba(0,0,0,0.5); }
         #middle { border-right: 2px solid rgba(255,255,255,0.1); }
-        
-        #cookie { width: 240px; cursor: pointer; transition: transform 0.05s; z-index: 10; position: relative; filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); }
-        .klick-anim { transform: scale(0.92) rotate(-3deg) !important; }
-        
-        .shopItem { background: rgba(60, 60, 60, 0.8); padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #444; }
+
+        /* --- MOBILE ANSICHT (FIX) --- */
+        @media (max-width: 800px) {
+            body { 
+                flex-direction: column; 
+                overflow-y: auto; /* Erlaubt das Scrollen der gesamten Seite */
+                overflow-x: hidden;
+                display: block; /* Wichtig für das Scroll-Verhalten */
+            }
+
+            #left { 
+                width: 100% !important; 
+                height: 350px; 
+                position: sticky; 
+                top: 0; 
+                z-index: 100; /* Immer ganz oben */
+                background: linear-gradient(180deg, #2c1f16 0%, #1e1e1e 100%);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+                border: none;
+                padding-bottom: 20px;
+            }
+
+            #middle, #right { 
+                width: 100% !important; 
+                height: auto !important;
+                min-height: 50vh;
+                overflow-y: visible; /* Deaktiviert internes Scrollen */
+                position: relative; 
+                z-index: 10; 
+                background: #251a12; 
+                padding: 20px;
+                box-sizing: border-box;
+                border: none;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.5); /* Schatten nach oben */
+            }
+
+            h1 { font-size: 1.5rem; margin-top: 10px; }
+            #cookie { width: 160px !important; }
+        }
+
+        /* Keks & Animationen */
+        #cookie { width: 220px; cursor: pointer; transition: transform 0.05s; filter: drop-shadow(0 0 15px rgba(0,0,0,0.5)); }
+        .klick-anim { transform: scale(0.92) rotate(-3deg); }
+
+        /* Shop Items */
+        .shopItem { background: rgba(60, 60, 60, 0.8); padding: 12px; margin: 10px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #444; }
         .shopEmoji { font-size: 2.5em; margin-right: 15px; width: 50px; text-align: center; }
         
-        .achItem { background: rgba(30, 30, 30, 0.9); padding: 8px; margin: 4px 0; border-radius: 6px; opacity: 0.15; filter: grayscale(1); transition: 0.5s; border: 1px solid #222; font-size: 0.85em; }
-        .achItem.unlocked { opacity: 1; filter: grayscale(0); border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
-        
-        button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; background: #e67e22; color: white; font-weight: bold; }
+        /* Achievements */
+        .achItem { background: rgba(30, 30, 30, 0.9); padding: 8px; margin: 5px 0; border-radius: 6px; opacity: 0.2; filter: grayscale(1); transition: 0.5s; border: 1px solid #222; }
+        .achItem.unlocked { opacity: 1; filter: grayscale(0); border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+
+        /* Buttons */
+        button { padding: 10px 15px; border-radius: 8px; border: none; cursor: pointer; background: #e67e22; color: white; font-weight: bold; }
         .btn-off { background: #7f8c8d; }
         .btn-on { background: #27ae60; }
 
-        #achievementPopup { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: linear-gradient(to bottom, #f1c40f, #d4ac0d); color: black; padding: 15px 30px; border-radius: 0 0 20px 20px; font-weight: bold; z-index: 5000; transition: 0.6s; box-shadow: 0 5px 20px rgba(0,0,0,0.5); width: 80%; text-align: center; }
-        .partikel { position: fixed; color: #f1c40f; font-weight: bold; pointer-events: none; animation: fly 0.8s forwards; text-shadow: 2px 2px 4px black; font-size: 1.8em; z-index: 6000; }
-        @keyframes fly { 0% {opacity:1; transform:translateY(0) scale(1.2);} 100% {opacity:0; transform:translateY(-150px) scale(1.8);} }
+        #achievementPopup { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #f1c40f; color: black; padding: 15px 25px; border-radius: 0 0 15px 15px; font-weight: bold; z-index: 1000; transition: 0.5s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 80%; text-align: center; }
+        .partikel { position: fixed; color: #f1c40f; font-weight: bold; pointer-events: none; animation: fly 0.8s forwards; text-shadow: 1px 1px 3px black; font-size: 1.5em; z-index: 2000; }
+        @keyframes fly { 0% {opacity:1; transform:translateY(0);} 100% {opacity:0; transform:translateY(-120px);} }
     </style>
 </head>
 <body>
@@ -66,17 +96,15 @@
 
 <div id="left">
     <h1>🍪 Crumbl Clicker</h1>
-    <h2 id="cookieCountDisplay" style="font-size: 3.5em; margin: 0;">0</h2>
+    <h2 id="cookieCountDisplay" style="font-size: 3em; margin: 5px 0;">0</h2>
     <p>Klick: <span id="cpcDisplay">1</span> | ⚡ CPS: <span id="cpsDisplay">0</span></p>
-    <div style="position: relative; margin-top: 40px;">
-        <img id="cookie" src="cookie.png" onmousedown="handleFirstClick(event)" ontouchstart="handleFirstClick(event)">
-    </div>
+    <img id="cookie" src="cookie.png" onmousedown="handleFirstClick(event)" ontouchstart="handleFirstClick(event)">
 </div>
 
 <div id="middle">
     <h2>🏪 Shop</h2>
     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <button id="offlineBtn" onclick="toggleOfflineMode()" class="btn-off" style="flex: 1;">💤 Offline-Modus: AUS</button>
+        <button id="offlineBtn" onclick="toggleOfflineMode()" class="btn-off" style="flex: 1;">💤 Offline: AUS</button>
         <button onclick="resetGame()" style="background: #c0392b;">🔄 Reset</button>
     </div>
     <div id="shopContainer"></div>
@@ -154,12 +182,10 @@ function init() {
     achievements.forEach(a => { achCont.innerHTML += `<div id="ach-${a.id}" class="achItem"><strong>${a.name}</strong><br>${a.desc}</div>`; });
     
     load(); 
-
     unlockedAchs.forEach(id => {
         const el = document.getElementById("ach-" + id);
         if(el) el.classList.add("unlocked");
     });
-    
     updateUI();
 }
 
@@ -173,8 +199,7 @@ function cookieKlick(e) {
     if(e && e.type === 'touchstart') e.preventDefault(); 
     let power = cpcBase * multiplier;
     cookies += power; totalCookiesEver += power; totalClicks++;
-    clickSound.currentTime = 0; 
-    clickSound.play().catch(()=>{});
+    clickSound.currentTime = 0; clickSound.play().catch(()=>{});
     const cookieEl = document.getElementById("cookie");
     cookieEl.classList.add("klick-anim");
     setTimeout(()=>cookieEl.classList.remove("klick-anim"), 50);
@@ -244,7 +269,7 @@ setInterval(() => {
 }, 1000/30);
 
 function save() { 
-    localStorage.setItem("cookie_Save_Balanced", JSON.stringify({
+    localStorage.setItem("cookie_Save_MobileFix", JSON.stringify({
         cookies, totalCookiesEver, totalClicks, cpcBase, offlineModeActive,
         lastSaveTime: Date.now(),
         shopAnzahlen: Object.keys(shop).map(k => ({k, a: shop[k].anzahl, p: shop[k].kosten})),
@@ -253,7 +278,7 @@ function save() {
 }
 
 function load() {
-    let raw = localStorage.getItem("cookie_Save_Balanced");
+    let raw = localStorage.getItem("cookie_Save_MobileFix");
     if(!raw) return;
     let d = JSON.parse(raw);
     cookies = d.cookies || 0; totalCookiesEver = d.totalCookiesEver || 0;
@@ -268,15 +293,11 @@ function load() {
         let diffSec = Math.floor((Date.now() - d.lastSaveTime) / 1000);
         if(diffSec > 10) { 
             let idleGain = diffSec * (getCps() / 2);
-            
-            // LIMIT: Max 10.000 pro Stunde (2.77 pro Sekunde)
             let maxGain = diffSec * (10000 / 3600);
             if(idleGain > maxGain) idleGain = maxGain;
-
             if(idleGain > 0) {
-                cookies += idleGain;
-                totalCookiesEver += idleGain;
-                setTimeout(() => showPopup(`💤 Willkommen zurück! Deine Arbeiter haben ${Math.floor(idleGain).toLocaleString()} Kekse gebacken (Max: 10k/Std).`), 1500);
+                cookies += idleGain; totalCookiesEver += idleGain;
+                setTimeout(() => showPopup(`💤 Willkommen zurück! +${Math.floor(idleGain).toLocaleString()} Kekse`), 1500);
             }
         }
     }
