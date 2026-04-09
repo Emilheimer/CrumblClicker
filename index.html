@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker - Ultimate Fixed Edition</title>
+    <title>Crumbl Clicker - Stable Edition</title>
     <style>
         :root { --primary: #f1c40f; --bg: #0f0f0f; --panel: #1a1a1a; --text: #ffffff; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; user-select: none; }
@@ -78,21 +78,21 @@
     </div>
 
     <div id="view-achievements" class="view">
-        <h2 style="text-align:center">Deine Trophäen</h2>
+        <h2 style="text-align:center">Trophäen</h2>
         <div id="achievementsContainer"></div>
     </div>
 
     <div id="view-leaderboard" class="view">
-        <h2 style="text-align:center">Bestenliste</h2>
+        <h2 style="text-align:center">Ranking</h2>
         <div id="leaderboardContainer"></div>
     </div>
 
     <div id="view-profile" class="view">
         <div id="auth-section">
-            <input type="text" id="usernameInput" placeholder="Name für Ranking" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444; border-radius:5px;">
-            <input type="email" id="emailInput" placeholder="E-Mail" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444; border-radius:5px;">
-            <input type="password" id="passwordInput" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:10px; background:#222; color:white; border:1px solid #444; border-radius:5px;">
-            <button id="auth-btn" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; color:black;">Login / Registrieren</button>
+            <input type="text" id="usernameInput" placeholder="Name" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444;">
+            <input type="email" id="emailInput" placeholder="E-Mail" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444;">
+            <input type="password" id="passwordInput" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:10px; background:#222; color:white; border:1px solid #444;">
+            <button id="auth-btn" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold;">Login / Registrieren</button>
         </div>
         <div id="user-info" style="display:none; text-align:center;">
             <h2 id="display-name">Spieler</h2>
@@ -100,8 +100,8 @@
                 <span>Offline-Produktion (5%)</span>
                 <input type="checkbox" id="offlineToggle" checked style="width:20px; height:20px;">
             </div>
-            <button id="logout-btn" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:8px; margin-bottom:10px; font-weight:bold;">Ausloggen</button>
-            <button id="reset-btn" style="width:100%; padding:10px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:bold;">Account Zurücksetzen</button>
+            <button id="logout-btn" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:8px; margin-bottom:10px;">Ausloggen</button>
+            <button id="reset-btn" style="width:100%; padding:10px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:bold;">Alles Löschen</button>
         </div>
     </div>
 </div>
@@ -132,8 +132,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Variabeln
     let cookies = 0; let totalEver = 0; let multiplier = 1; let offlineActive = true;
     let currentUser = null; let unlockedAchs = [];
+
+    // SOUNDS
+    const clickSound = new Audio('click.mp3');
+    const achSound = new Audio('achieve.mp3');
+    function playSnd(s) { s.currentTime = 0; s.play().catch(()=>{}); }
 
     const buildings = {
         click: { name: "Klick-Training", kosten: 50, base: 50, cpc: 1, anzahl: 0, emoji: "💪" },
@@ -169,10 +175,9 @@
     };
 
     const achData = [];
-    for(let i=1; i<=88; i++) achData.push({ id: i, type: 'cookies', target: Math.floor(100 * Math.pow(i, 3.4)), title: `Sammler Stufe ${i}`, desc: `Sammle ${formatNum(Math.floor(100 * Math.pow(i, 3.4)))} Kekse.`, icon: "🍪" });
-    achData.push({ id: 89, type: 'build', b: 'oma', target: 10, title: "Oma-Power", desc: "10 Omas backen!", icon: "👵" });
-    achData.push({ id: 90, type: 'build', b: 'click', target: 50, title: "Klick-Profi", desc: "50 Klick-Trainings.", icon: "🏋️" });
-    for(let i=91; i<=100; i++) achData.push({ id: i, type: 'cookies', target: 1e12 * (i-90), title: `Keks-Gott ${i}`, desc: "Unmenschliche Mengen.", icon: "✨" });
+    for(let i=1; i<=100; i++) {
+        achData.push({ id: i, target: Math.floor(100 * Math.pow(i, 3.4)), title: `Keks-Level ${i}`, icon: "🏆" });
+    }
 
     function formatNum(n) {
         if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
@@ -201,21 +206,23 @@
         const ac = document.getElementById('achievementsContainer'); ac.innerHTML = "";
         achData.forEach(a => {
             let done = unlockedAchs.includes(a.id);
-            ac.innerHTML += `<div class="shopItem achievement-card ${done?'unlocked':''}"><span>${a.icon}</span><div class="item-info"><b>${a.title}</b><span>${a.desc}</span></div></div>`;
+            ac.innerHTML += `<div class="shopItem achievement-card ${done?'unlocked':''}"><span>${a.icon}</span><div class="item-info"><b>${a.title}</b><span>Ziel: ${formatNum(a.target)}</span></div></div>`;
         });
         document.getElementById('achCountDisplay').innerText = unlockedAchs.length;
     };
 
     window.buyBuilding = (id) => {
-        let b = buildings[id]; if(cookies >= b.kosten) { cookies -= b.kosten; b.anzahl++; b.kosten = Math.floor(b.base * Math.pow(1.15, b.anzahl)); renderShop(); updateUI(); checkAchs(); }
+        let b = buildings[id]; if(cookies >= b.kosten) { playSnd(clickSound); cookies -= b.kosten; b.anzahl++; b.kosten = Math.floor(b.base * Math.pow(1.15, b.anzahl)); renderShop(); updateUI(); checkAchs(); saveGame(); }
     };
 
     window.buySpecial = (id) => {
-        let s = specials[id]; if(cookies >= s.kosten) { cookies -= s.kosten; multiplier += s.mult; s.kosten *= 8; renderShop(); updateUI(); }
+        let s = specials[id]; if(cookies >= s.kosten) { playSnd(clickSound); cookies -= s.kosten; multiplier += s.mult; s.kosten *= 10; renderShop(); updateUI(); saveGame(); }
     };
 
     document.getElementById('cookie').onclick = () => {
-        let gain = (1 + buildings.click.anzahl * buildings.click.cpc) * multiplier; cookies += gain; totalEver += gain; updateUI(); checkAchs();
+        playSnd(clickSound);
+        let gain = (1 + buildings.click.anzahl * buildings.click.cpc) * multiplier; 
+        cookies += gain; totalEver += gain; updateUI(); checkAchs();
         document.getElementById('cookie').classList.add('klick-anim'); setTimeout(() => document.getElementById('cookie').classList.remove('klick-anim'), 50);
     };
 
@@ -224,12 +231,38 @@
     function checkAchs() {
         let changed = false;
         achData.forEach(a => {
-            if(!unlockedAchs.includes(a.id)) {
-                if(a.type === 'cookies' && totalEver >= a.target) { unlockedAchs.push(a.id); changed = true; }
-                if(a.type === 'build' && buildings[a.b].anzahl >= a.target) { unlockedAchs.push(a.id); changed = true; }
-            }
+            if(!unlockedAchs.includes(a.id) && totalEver >= a.target) { unlockedAchs.push(a.id); playSnd(achSound); changed = true; }
         });
         if(changed) renderAchs();
+    }
+
+    // SPEICHERN
+    function saveGame() {
+        const data = { cookies, totalEver, multiplier, bData: Object.fromEntries(Object.entries(buildings).map(([k,v])=>[k,v.anzahl])), achs: unlockedAchs, offlineActive, lastSave: Date.now() };
+        localStorage.setItem('crumbl_save', JSON.stringify(data));
+        if(currentUser) setDoc(doc(db, "users", currentUser.uid), data, { merge: true });
+    }
+
+    // LADEN
+    async function loadData(d) {
+        if(!d) return;
+        cookies = d.cookies || 0; totalEver = d.totalEver || 0; multiplier = d.multiplier || 1;
+        unlockedAchs = d.achs || []; offlineActive = d.offlineActive !== undefined ? d.offlineActive : true;
+        if(d.bData) for(let k in d.bData) if(buildings[k]) { buildings[k].anzahl = d.bData[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); }
+        
+        // Offline-Zähler Logik
+        if(offlineActive && d.lastSave) {
+            let seconds = Math.floor((Date.now() - d.lastSave) / 1000);
+            if(seconds > 10) {
+                let offlineGain = seconds * (getCps() * 0.05);
+                if(offlineGain > 1) {
+                    cookies += offlineGain; totalEver += offlineGain;
+                    document.getElementById('offlineGainDisplay').innerText = formatNum(offlineGain);
+                    document.getElementById('offlineModal').style.display = 'flex';
+                }
+            }
+        }
+        updateUI(); renderShop(); renderAchs();
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -237,50 +270,34 @@
             currentUser = user;
             const snap = await getDoc(doc(db, "users", user.uid));
             if(snap.exists()) {
-                let d = snap.data(); cookies = d.cookies || 0; totalEver = d.totalEver || 0; multiplier = d.multiplier || 1; unlockedAchs = d.achs || [];
-                offlineActive = d.offlineActive !== undefined ? d.offlineActive : true;
-                document.getElementById('offlineToggle').checked = offlineActive;
-                document.getElementById('display-name').innerText = d.username || "Spieler";
-                document.getElementById('name-display-main').innerText = d.username || "Spieler";
-                if(offlineActive && d.lastSave) {
-                    let gain = ((Date.now() - d.lastSave) / 1000) * (getCps() * 0.05);
-                    if(gain > 1) { cookies += gain; totalEver += gain; document.getElementById('offlineGainDisplay').innerText = formatNum(gain); document.getElementById('offlineModal').style.display = 'flex'; }
-                }
-                if(d.bData) for(let k in d.bData) if(buildings[k]) { buildings[k].anzahl = d.bData[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); }
+                loadData(snap.data());
+                document.getElementById('display-name').innerText = snap.data().username || "Spieler";
+                document.getElementById('name-display-main').innerText = snap.data().username || "Spieler";
+            } else {
+                const local = localStorage.getItem('crumbl_save');
+                if(local) loadData(JSON.parse(local));
             }
             document.getElementById('auth-section').style.display = 'none'; document.getElementById('user-info').style.display = 'block';
-            renderShop(); renderAchs(); updateUI();
         }
     });
 
-    // Buttons Logik
     document.getElementById('auth-btn').onclick = async () => {
         const e = document.getElementById('emailInput').value, p = document.getElementById('passwordInput').value, u = document.getElementById('usernameInput').value;
         const res = await signInWithEmailAndPassword(auth, e, p).catch(() => createUserWithEmailAndPassword(auth, e, p));
         if(res.user && u) await setDoc(doc(db, "users", res.user.uid), { username: u }, { merge: true });
     };
 
-    document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    document.getElementById('logout-btn').onclick = () => { localStorage.removeItem('crumbl_save'); signOut(auth).then(() => location.reload()); };
+    document.getElementById('reset-btn').onclick = async () => { if(confirm("Alles löschen?")) { localStorage.clear(); if(currentUser) await setDoc(doc(db, "users", currentUser.uid), { cookies: 0, totalEver: 0, bData: {}, achs: [] }); location.reload(); } };
+    document.getElementById('offlineToggle').onchange = (e) => { offlineActive = e.target.checked; saveGame(); };
 
-    document.getElementById('reset-btn').onclick = async () => {
-        if(confirm("Bist du sicher? Dein gesamter Cloud-Fortschritt wird gelöscht!")) {
-            if(currentUser) await setDoc(doc(db, "users", currentUser.uid), { cookies: 0, totalEver: 0, multiplier: 1, bData: {}, achs: [] }, {merge: true});
-            location.reload();
-        }
-    };
-
-    document.getElementById('offlineToggle').onchange = (e) => { offlineActive = e.target.checked; };
-
-    onSnapshot(query(collection(db, "users"), orderBy("totalEver", "desc"), limit(15)), (snap) => {
+    onSnapshot(query(collection(db, "users"), orderBy("totalEver", "desc"), limit(10)), (snap) => {
         let h = ""; let i = 1;
-        snap.forEach(d => {
-            let data = d.data();
-            h += `<div class="leader-card"><div class="rank-badge">#${i++}</div><div style="flex-grow:1"><b>${data.username || 'Gast'}</b><br><small>Gesamt: ${formatNum(data.totalEver || 0)}</small></div><div style="color:var(--gold)">🏆 ${data.achs ? data.achs.length : 0}</div></div>`;
-        });
+        snap.forEach(d => { let data = d.data(); h += `<div class="leader-card"><div class="rank-badge">#${i++}</div><div style="flex-grow:1"><b>${data.username || 'Gast'}</b><br><small>🍪 ${formatNum(data.totalEver || 0)}</small></div><div style="color:var(--gold)">🏆 ${data.achs ? data.achs.length : 0}</div></div>`; });
         document.getElementById('leaderboardContainer').innerHTML = h;
     });
 
-    setInterval(() => { if(currentUser) setDoc(doc(db, "users", currentUser.uid), { cookies, totalEver, multiplier, bData: Object.fromEntries(Object.entries(buildings).map(([k,v])=>[k,v.anzahl])), achs: unlockedAchs, offlineActive, lastSave: Date.now() }, { merge: true }); }, 10000);
+    setInterval(saveGame, 15000);
     setInterval(() => { cookies += getCps() / 10; totalEver += getCps() / 10; updateUI(); }, 100);
     setInterval(() => { if(Math.random() < 0.2) { const rc = document.getElementById('rain-container'); const c = document.createElement('div'); c.className = 'rain-cookie'; c.innerText = '🍪'; c.style.left = Math.random() * 100 + 'vw'; let d = Math.random() * 3 + 2; c.style.animationDuration = d + 's'; rc.appendChild(c); setTimeout(() => c.remove(), d * 1000); } }, 800);
 
