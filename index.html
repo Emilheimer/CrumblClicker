@@ -3,358 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legendär</title>
-    
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-    
+    <title>Crumbl Clicker: Legend v2.1.3</title>
     <style>
-        :root { --primary: #f1c40f; --bg: #0f0f0f; --panel: #1a1a1a; --text: #ffffff; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; user-select: none; }
+        :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
         
-        /* Hintergrund-Regen */
-        #rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-        .rain-cookie { position: absolute; top: -50px; font-size: 24px; opacity: 0.15; animation: fall linear forwards; }
-        
-        /* Klick-Zahlen Popups */
-        .click-popup { position: fixed; color: var(--primary); font-weight: bold; font-size: 1.6rem; pointer-events: none; z-index: 1000; animation: floatUp 0.8s ease-out forwards; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .version-tag { position: fixed; top: 12px; left: 15px; font-size: 0.8rem; color: #666; font-weight: bold; z-index: 1000; pointer-events: none; }
 
-        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120px) scale(1.2); opacity: 0; } }
+        /* Universelles Benachrichtigungs-System */
+        .game-notification { position: fixed; top: 20px; right: 20px; background: #1a1a1a; border: 2px solid var(--primary); border-radius: 12px; padding: 15px; color: white; z-index: 10000; animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards; box-shadow: 0 0 20px rgba(0,0,0,0.5); min-width: 220px; }
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
 
-        header { background: var(--panel); padding: 10px; text-align: center; border-bottom: 2px solid #333; z-index: 100; }
-        #cookieCountDisplay { font-size: 2.2em; font-weight: bold; color: var(--primary); }
+        #rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .rain-cookie { position: absolute; top: -50px; font-size: 24px; opacity: 0.4; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        .particle { position: fixed; color: var(--primary); font-weight: 900; pointer-events: none; z-index: 2000; animation: pFloat 0.7s ease-out forwards; }
+        @keyframes pFloat { 0% { transform: translate(-50%, -50%); opacity: 1; } 100% { transform: translate(-50%, -100px); opacity: 0; } }
+
+        header { background: var(--panel); padding: 15px; text-align: center; border-bottom: 2px solid #222; position: relative; z-index: 100; }
+        #cookieCountDisplay { font-size: 2.5em; font-weight: 900; color: var(--primary); }
         
-        #main-content { flex-grow: 1; overflow-y: auto; position: relative; z-index: 10; padding-bottom: 80px; }
-        .view { display: none; padding: 15px; }
+        #main-content { height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 10; }
+        .view { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        #view-keks { flex-direction: column; align-items: center; justify-content: center; height: 80%; }
-        #view-keks.active { display: flex; }
-        #cookie { width: 50vw; max-width: 180px; cursor: pointer; transition: transform 0.05s; z-index: 20; position: relative; }
-        .klick-anim { transform: scale(0.92); }
+        #view-keks { text-align: center; padding-top: 50px; }
+        #cookie { width: 55vw; max-width: 200px; cursor: pointer; transition: transform 0.05s; }
+        #cookie:active { transform: scale(0.9); }
 
-        .category-title { border-left: 4px solid var(--primary); padding-left: 10px; margin: 25px 0 10px 0; color: var(--primary); font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .shopItem { background: #1e1e1e; padding: 12px; margin: 8px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #333; }
-        .item-info { flex-grow: 1; margin-left: 12px; }
-        .item-info b { display: block; font-size: 0.9rem; }
-        .item-info span { color: var(--primary); font-size: 0.8rem; }
+        .shop-item { background: #181818; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; align-items: center; border: 1px solid #222; }
+        .item-info { flex-grow: 1; margin-left: 15px; }
+        .item-price { color: var(--primary); font-weight: bold; font-size: 0.9rem; }
+        .buy-btn { background: var(--success); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; min-width: 80px; }
+        .buy-btn:disabled { background: #333 !important; color: #666 !important; cursor: not-allowed; opacity: 0.5; }
+
+        .ach-card { display: flex; align-items: center; background: #161616; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #222; opacity: 0.2; }
+        .ach-card.unlocked { opacity: 1; border-color: var(--gold); }
+        .progress-bar-bg { background: #222; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; }
+        .progress-bar-fill { background: var(--gold); height: 100%; width: 0%; transition: 0.5s; }
+
+        nav { height: 75px; background: var(--panel); display: flex; position: fixed; bottom: 0; width: 100%; border-top: 1px solid #222; z-index: 1000; }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: #666; cursor: pointer; }
+        .nav-btn.active { color: var(--primary); font-weight: bold; }
         
-        button.buy-btn { background: #e67e22; border: none; color: white; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        button:disabled { opacity: 0.3; filter: grayscale(1); }
-
-        .achievement-card { opacity: 0.2; transition: 0.3s; filter: grayscale(1); border: 1px solid #333; }
-        .achievement-card.unlocked { opacity: 1; border-color: var(--gold); background: rgba(255, 215, 0, 0.1); filter: grayscale(0); }
-
-        .leader-card { background: #1e1e1e; padding: 12px; margin-bottom: 8px; border-radius: 12px; display: flex; align-items: center; border: 1px solid #333; }
-        .rank-badge { width: 35px; font-weight: bold; color: var(--primary); font-size: 1.1rem; }
-
-        nav { height: 70px; background: var(--panel); display: flex; border-top: 1px solid #333; position: fixed; bottom: 0; width: 100%; z-index: 200; }
-        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: 0.65rem; cursor: pointer; }
-        .nav-btn.active { color: var(--primary); }
-
-        #offlineModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .box { background: #151515; padding: 20px; border-radius: 12px; margin-top: 15px; border: 1px solid #222; }
+        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: none; background: #000; color: white; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
+<div class="version-tag">v2.1.3</div>
 <div id="rain-container"></div>
-
-<div id="offlineModal">
-    <div style="background: var(--panel); padding: 30px; border-radius: 20px; text-align: center; border: 2px solid var(--primary); max-width: 80%;">
-        <h2 style="color: var(--primary); margin-top: 0;">Willkommen zurück!</h2>
-        <p>Deine Helfer waren fleißig (10% Rate):</p>
-        <div style="font-size: 2.2rem; color: var(--gold); margin: 20px 0; font-weight: bold;">+ <span id="offlineGainDisplay">0</span> 🍪</div>
-        <button onclick="document.getElementById('offlineModal').style.display='none'" style="width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; color: black; font-size: 1rem;">Einsammeln!</button>
-    </div>
-</div>
 
 <header>
     <div id="cookieCountDisplay">0</div>
-    <div style="font-size: 0.8rem; color: #888;">CPS: <span id="cpsDisplay">0</span> | Erfolge: <span id="achCountDisplay">0</span>/100</div>
+    <div style="font-size: 0.8rem; color: #888;">
+        <span id="cpsDisplay">0</span> CPS | <span id="cpcDisplay">1</span> PRO KLICK
+    </div>
 </header>
 
 <div id="main-content">
     <div id="view-keks" class="view active">
-        <img id="cookie" src="cookie.png">
-        <div id="name-display-main" style="margin-top:15px; font-weight:bold; color:var(--primary)">Gast</div>
+        <img id="cookie" src="cookie.png" alt="Cookie">
+        <h2 id="user-display-name" style="margin-top:20px; letter-spacing:2px; color:#555;">GAST-BÄCKER</h2>
     </div>
-    
+
     <div id="view-shop" class="view">
-        <div class="category-title">Gebäude</div>
+        <h3 style="color:var(--primary); font-size: 0.8rem; letter-spacing: 1px;">GEBÄUDE (11 VERFÜGBAR)</h3>
         <div id="buildingsContainer"></div>
-        <div class="category-title">Spezial-Forschung</div>
-        <div id="specialsContainer"></div>
+        <h3 style="color:var(--accent); margin-top:20px; font-size: 0.8rem; letter-spacing: 1px;">SPEZIAL ITEMS (UPGRADES)</h3>
+        <div id="upgradesContainer"></div>
     </div>
 
     <div id="view-achievements" class="view">
-        <h2 style="text-align:center">Ehrungen</h2>
+        <div style="text-align:center; padding:10px;">
+            <b style="color:var(--gold)">ERFOLGE: <span id="ach-count-text">0/0</span></b>
+            <div class="progress-bar-bg"><div id="ach-bar-fill" class="progress-bar-fill"></div></div>
+        </div>
         <div id="achievementsContainer"></div>
     </div>
 
     <div id="view-leaderboard" class="view">
-        <h2 style="text-align:center">Globale Bestenliste</h2>
-        <div id="leaderboardContainer">Suche Bäcker...</div>
+        <h2 style="text-align:center;">GLOBALES RANKING</h2>
+        <div id="leaderboardContainer"></div>
     </div>
 
     <div id="view-profile" class="view">
-        <div id="auth-section">
-            <input type="text" id="usernameInput" placeholder="Dein Name" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444;">
-            <input type="email" id="emailInput" placeholder="E-Mail" style="width:100%; padding:10px; margin-bottom:5px; background:#222; color:white; border:1px solid #444;">
-            <input type="password" id="passwordInput" placeholder="Passwort" style="width:100%; padding:10px; margin-bottom:10px; background:#222; color:white; border:1px solid #444;">
-            <button id="auth-btn" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold;">Account nutzen</button>
+        <div id="auth-box" class="box">
+            <h3>LOGIN / REGISTRIERUNG</h3>
+            <input type="text" id="regName" placeholder="Anzeigename">
+            <input type="email" id="regEmail" placeholder="E-Mail">
+            <input type="password" id="regPass" placeholder="Passwort">
+            <button id="loginBtn" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; margin-top:10px;">BETRETEN</button>
         </div>
-        <div id="user-info" style="display:none; text-align:center;">
-            <h2 id="display-name">Spieler</h2>
-            <div style="background:#222; padding:15px; border-radius:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-                <span>Offline-Produktion (10%)</span>
-                <input type="checkbox" id="offlineToggle" checked style="width:20px; height:20px;">
+        <div id="profile-box" class="box" style="display:none; text-align:center;">
+            <h2 id="prof-name" style="color:var(--primary)">...</h2>
+            <div class="box" style="text-align:left; border-color:var(--accent)">
+                <b style="color:var(--accent)">📤 KEKS-TRANSFER</b>
+                <input type="text" id="traName" placeholder="Empfänger Name">
+                <input type="number" id="traAmt" placeholder="Menge">
+                <button id="traBtn" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px;">SENDEN</button>
             </div>
-            <button id="logout-btn" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:8px; margin-bottom:10px;">Ausloggen</button>
-            <button id="reset-btn" style="width:100%; padding:10px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:bold;">Alles löschen</button>
+            <button id="logoutBtn" style="width:100%; background:#333; color:white; border:none; padding:12px; border-radius:8px; margin-top:20px;">ABMELDEN</button>
+            <button id="resetBtn" style="width:100%; background:var(--danger); color:white; border:none; padding:12px; border-radius:8px; margin-top:10px; font-weight:bold;">⚠️ ACCOUNT LÖSCHEN (RESET)</button>
         </div>
     </div>
 </div>
 
-<nav>
-    <div class="nav-btn active" data-view="view-keks">🍪<br>Keks</div>
-    <div class="nav-btn" data-view="view-shop">🏪<br>Shop</div>
-    <div class="nav-btn" data-view="view-achievements">🏆<br>Erfolge</div>
-    <div class="nav-btn" data-view="view-leaderboard">📊<br>Ranking</div>
-    <div class="nav-btn" data-view="view-profile">👤<br>Profil</div>
+<nav id="main-nav">
+    <div class="nav-btn active" data-view="view-keks"><span>🍪</span><br><span>HOME</span></div>
+    <div class="nav-btn" data-view="view-shop"><span>🏪</span><br><span>SHOP</span></div>
+    <div class="nav-btn" data-view="view-achievements"><span>🏆</span><br><span>LOG</span></div>
+    <div class="nav-btn" data-view="view-leaderboard"><span>📊</span><br><span>RANK</span></div>
+    <div class="nav-btn" data-view="view-profile"><span>👤</span><br><span>USER</span></div>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, where, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBw_qDPQsWU1sl5KVE-74WCHsqPI0HmxN8",
-        authDomain: "crumblclicker.firebaseapp.com",
-        projectId: "crumblclicker",
-        storageBucket: "crumblclicker.firebasestorage.app",
-        messagingSenderId: "912766884531",
-        appId: "1:912766884531:web:ac49743ae7d2684f12aec6"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyBw_qDPQsWU1sl5KVE-74WCHsqPI0HmxN8", authDomain: "crumblclicker.firebaseapp.com", projectId: "crumblclicker", storageBucket: "crumblclicker.firebasestorage.app", messagingSenderId: "912766884531", appId: "1:912766884531:web:ac49743ae7d2684f12aec6" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let cookies = 0; let totalEver = 0; let multiplier = 1; let offlineActive = true;
-    let currentUser = null; let unlockedAchs = [];
-
-    const clickSound = new Audio('click.mp3');
-    const achSound = new Audio('achieve.mp3');
-    function playSnd(s) { s.currentTime = 0; s.play().catch(()=>{}); }
+    let cookies = 0, totalEver = 0, currentUser = null, isLoading = true, unlockedAchs = [];
+    const sounds = { click: new Audio('click.mp3'), ach: new Audio('achieve.mp3') };
 
     const buildings = {
-        click: { name: "Klick-Muskeln", kosten: 50, base: 50, cpc: 1, anzahl: 0, emoji: "💪" },
-        cursor: { name: "Auto-Finger", kosten: 15, base: 15, cps: 0.5, anzahl: 0, emoji: "🖱️" },
-        oma: { name: "Oma-Armee", kosten: 100, base: 100, cps: 4, anzahl: 0, emoji: "👵" },
-        farm: { name: "Keks-Plantage", kosten: 1100, base: 1100, cps: 15, anzahl: 0, emoji: "🚜" },
-        mine: { name: "Schoko-Mine", kosten: 12000, base: 12000, cps: 50, anzahl: 0, emoji: "⛏️" },
-        fabrik: { name: "Teig-Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, emoji: "🏭" },
-        bank: { name: "Keks-Börse", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, emoji: "🏦" },
-        tempel: { name: "Kult-Altar", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, emoji: "🕍" },
-        wizard: { name: "Zauberturm", kosten: 330000000, base: 330000000, cps: 44000, anzahl: 0, emoji: "🧙" },
-        portal: { name: "Wurmloch", kosten: 5000000000, base: 5000000000, cps: 250000, anzahl: 0, emoji: "🌀" },
-        zeit: { name: "Delorean", kosten: 75000000000, base: 75000000000, cps: 1600000, anzahl: 0, emoji: "⏳" },
-        gott: { name: "Keks-Gott", kosten: 999999999999, base: 999999999999, cps: 10000000, anzahl: 0, emoji: "✨" }
+        maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "🖱️", quotes: ["Klick-Sklave", "Maus-Massaker", "Sehnenscheidenentzündung"] },
+        oma: { name: "Oma", kosten: 100, base: 100, cps: 1, anzahl: 0, icon: "👵", quotes: ["Keks-Dealerin", "Strick-Mafia", "Heimliche Herrscherin"] },
+        farm: { name: "Farm", kosten: 1100, base: 1100, cps: 8, anzahl: 0, icon: "🚜", quotes: ["GVO-Kekse", "Bauer sucht Keks", "Monokultur"] },
+        mine: { name: "Mine", kosten: 12000, base: 12000, cps: 47, anzahl: 0, icon: "⛏️", quotes: ["Keks-Erz", "Staublunge", "Diamant-Zucker"] },
+        fabrik: { name: "Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, icon: "🏭", quotes: ["Massenproduktion", "Abgas-Zucker", "Fließband-Krümel"] },
+        bank: { name: "Bank", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, icon: "🏦", quotes: ["Keks-Inflation", "Börsenkrümel", "Finanz-Hai"] },
+        tempel: { name: "Tempel", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, icon: "🏛️", quotes: ["Keks-Reliquie", "Teig-Opferung", "Hohepriester"] },
+        zauberer: { name: "Zauberturm", kosten: 330000000, base: 330000000, cps: 44000, anzahl: 0, icon: "🧙", quotes: ["Hokuspokus", "Mana-Mehl", "Abrakadabra"] },
+        rakete: { name: "Rakete", kosten: 5100000000, base: 5100000000, cps: 260000, anzahl: 0, icon: "🚀", quotes: ["Mars-Besiedlung", "Space-Teig", "Elon Musk weint"] },
+        zeit: { name: "Zeitmaschine", kosten: 75000000000, base: 75000000000, cps: 1600000, anzahl: 0, icon: "⌛", quotes: ["Keks vor Christus", "Gestern gebacken", "Paradoxon"] },
+        gott: { name: "Keks-Gott", kosten: 999999999999, base: 999999999999, cps: 10000000, anzahl: 0, icon: "👼", quotes: ["Amen", "Omnipotenz", "Das Alpha und Omega"] }
     };
 
-    const specials = {
-        s1: { name: "Glücks-Hefe", kosten: 5000, mult: 0.2, emoji: "🍀" },
-        s2: { name: "Zuckerschock", kosten: 25000, mult: 0.3, emoji: "🧁" },
-        s3: { name: "Doppel-Füllung", kosten: 100000, mult: 0.5, emoji: "🥛" },
-        s4: { name: "Turbo-Ofen", kosten: 500000, mult: 1.0, emoji: "🔥" },
-        s5: { name: "Nanoroboter", kosten: 2000000, mult: 1.5, emoji: "🍫" },
-        s6: { name: "Goldene Walze", kosten: 10000000, mult: 2.0, emoji: "🥖" },
-        s7: { name: "Meister-Rezept", kosten: 50000000, mult: 2.5, emoji: "👨‍🍳" },
-        s8: { name: "Keks-Cloud", kosten: 250000000, mult: 3.0, emoji: "☁️" },
-        s9: { name: "Alien-Technik", kosten: 1000000000, mult: 4.0, emoji: "🌍" },
-        s10: { name: "Urknall-Teig", kosten: 5000000000, mult: 5.0, emoji: "⭐" }
+    const upgrades = {
+        trainer: { name: "Klick-Trainer", kosten: 50, base: 50, power: 1, anzahl: 0, icon: "💪" },
+        ofen: { name: "Turbo-Ofen", kosten: 5000, base: 5000, power: 15, anzahl: 0, icon: "🔥" },
+        goldmaus: { name: "Platin-Maus", kosten: 100000, base: 100000, power: 100, anzahl: 0, icon: "🖱️✨" },
+        finger: { name: "Diamond Finger", kosten: 2500000, base: 2500000, power: 1000, anzahl: 0, icon: "💎" },
+        matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "🕶️" }
     };
 
-    // LUSTIGE ACHIEVEMENTS
-    const achData = [
-        { id: 1, type: 'cookies', target: 1, title: "Frisch gebacken", desc: "Dein allererster Krümel.", icon: "👶" },
-        { id: 2, type: 'cookies', target: 1000, title: "Keks-Messie", desc: "Du hortest Dinge...", icon: "🧺" },
-        { id: 3, type: 'build', b: 'oma', target: 1, title: "Enkel des Jahres", desc: "Oma ist jetzt angestellt.", icon: "👵" },
-        { id: 4, type: 'build', b: 'oma', target: 50, title: "Oma-Kartell", desc: "Sie kontrollieren den Schwarzmarkt.", icon: "🕶️" },
-        { id: 5, type: 'cookies', target: 1000000, title: "Zucker-Koma", desc: "Eine Million Kekse im Blut.", icon: "💉" },
-        { id: 6, type: 'build', b: 'mine', target: 10, title: "Deep Space Bake", desc: "Zu tief gegraben.", icon: "⛏️" },
-        { id: 7, type: 'build', b: 'fabrik', target: 5, title: "Smog-Bäcker", desc: "Die Luft schmeckt nach Schoko.", icon: "🏭" },
-        { id: 8, type: 'cookies', target: 1000000000, title: "Illuminati-Teig", desc: "Du gehörst zur Elite.", icon: "👁️" },
-        { id: 9, type: 'build', b: 'portal', target: 1, title: "Vorsicht, Wurm!", desc: "Kekse aus der 5. Dimension.", icon: "🌀" },
-        { id: 10, type: 'cookies', target: 1e12, title: "Keks-Singularität", desc: "Das Universum kollabiert vor Süße.", icon: "🕳️" }
-    ];
-    // Restliche füllen für 100 Stück
-    for(let i=11; i<=100; i++) {
-        achData.push({ id: i, type: 'cookies', target: Math.floor(50000 * Math.pow(i, 4.3)), title: `Keks-Wahnsinn Stufe ${i}`, desc: "Einfach immer weiter...", icon: "🔥" });
-    }
+    let allAchs = [];
+    const milestoness = [1, 5, 10, 25, 50, 100, 150, 200, 250, 300, 400, 500];
+    Object.entries(buildings).forEach(([id, b]) => {
+        milestoness.forEach((m, idx) => {
+            const quote = b.quotes[idx % b.quotes.length];
+            allAchs.push({ id: `b_${id}_${m}`, target: m, bid: id, type: 'building', title: `${quote} (${m}x)`, desc: `Du hast ${m} ${b.name} Gebäude.` });
+        });
+    });
+    const cMilestones = [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000, 1000000000000];
+    cMilestones.forEach(t => allAchs.push({ id: `c_${t}`, target: t, type: 'cookies', title: `Bäcker-Rang: ${format(t)}`, desc: `Backe insgesamt ${format(t)} Kekse.` }));
 
-    function formatNum(n) {
-        if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
-        if (n >= 1e9) return (n/1e9).toFixed(2) + "B";
-        if (n >= 1e6) return (n/1e6).toFixed(2) + "M";
-        if (n >= 1e3) return (n/1e3).toFixed(1) + "k";
+    function format(n) {
+        if (n >= 1e12) return (n/1e12).toFixed(2) + " T";
+        if (n >= 1e9) return (n/1e9).toFixed(2) + " B";
+        if (n >= 1e6) return (n/1e6).toFixed(2) + " M";
+        if (n >= 1e3) return (n/1e3).toFixed(1) + " k";
         return Math.floor(n).toLocaleString();
     }
 
-    function getCps() { return Object.values(buildings).reduce((a,b)=>a+(b.cps?b.anzahl*b.cps:0), 0) * multiplier; }
+    // Universelles Popup
+    function notify(title, text, color = "var(--primary)") {
+        const p = document.createElement('div');
+        p.className = 'game-notification';
+        p.style.borderColor = color;
+        p.innerHTML = `<b style="color:${color}">${title}</b><br><small>${text}</small>`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
+    }
 
-    window.renderShop = () => {
-        const bc = document.getElementById('buildingsContainer'), sc = document.getElementById('specialsContainer');
-        bc.innerHTML = ""; sc.innerHTML = "";
-        for(let id in buildings) {
-            let b = buildings[id];
-            bc.innerHTML += `<div class="shopItem"><span>${b.emoji}</span><div class="item-info"><b>${b.name} (${b.anzahl})</b><span>${formatNum(b.kosten)} 🍪</span></div><button class="buy-btn" onclick="buyBuilding('${id}')" ${cookies<b.kosten?'disabled':''}>Kauf</button></div>`;
-        }
-        for(let id in specials) {
-            let s = specials[id];
-            sc.innerHTML += `<div class="shopItem" style="border-color:var(--accent)"><span>${s.emoji}</span><div class="item-info"><b>${s.name} (+${s.mult}x)</b><span>${formatNum(s.kosten)} 🍪</span></div><button class="buy-btn" onclick="buySpecial('${id}')" ${cookies<s.kosten?'disabled':''}>Kauf</button></div>`;
-        }
-    };
-
-    window.renderAchs = () => {
-        const ac = document.getElementById('achievementsContainer'); ac.innerHTML = "";
-        achData.forEach(a => {
-            let done = unlockedAchs.includes(a.id);
-            ac.innerHTML += `<div class="shopItem achievement-card ${done?'unlocked':''}"><span>${a.icon}</span><div class="item-info"><b>${a.title}</b><span>${a.desc}</span></div></div>`;
-        });
-        document.getElementById('achCountDisplay').innerText = unlockedAchs.length;
-    };
-
-    window.buyBuilding = (id) => {
-        let b = buildings[id]; if(cookies >= b.kosten) { playSnd(clickSound); cookies -= b.kosten; b.anzahl++; b.kosten = Math.floor(b.base * Math.pow(1.15, b.anzahl)); renderShop(); updateUI(); checkAchs(); saveGame(); }
-    };
-
-    window.buySpecial = (id) => {
-        let s = specials[id]; if(cookies >= s.kosten) { playSnd(clickSound); cookies -= s.kosten; multiplier += s.mult; s.kosten *= 10; renderShop(); updateUI(); saveGame(); }
-    };
-
-    // KLICK MIT POPUPS
-    document.getElementById('cookie').addEventListener('click', (e) => {
-        playSnd(clickSound);
-        let gain = (1 + buildings.click.anzahl * buildings.click.cpc) * multiplier; 
-        cookies += gain; totalEver += gain; updateUI(); checkAchs();
-        
-        const pop = document.createElement('div');
-        pop.className = 'click-popup';
-        pop.innerText = `+${formatNum(gain)}`;
-        pop.style.left = `${e.clientX}px`; pop.style.top = `${e.clientY}px`;
-        document.body.appendChild(pop);
-        setTimeout(() => pop.remove(), 800);
-
-        document.getElementById('cookie').classList.add('klick-anim');
-        setTimeout(() => document.getElementById('cookie').classList.remove('klick-anim'), 50);
+    document.getElementById('main-nav').addEventListener('click', (e) => {
+        const btn = e.target.closest('.nav-btn'); 
+        if (!btn) return; 
+        document.querySelectorAll('.view, .nav-btn').forEach(el => el.classList.remove('active'));
+        const viewId = btn.getAttribute('data-view');
+        document.getElementById(viewId).classList.add('active');
+        btn.classList.add('active');
+        if(viewId === 'view-shop') renderShop();
+        if(viewId === 'view-achievements') renderAchs();
+        if(viewId === 'view-leaderboard') loadLeads();
     });
 
-    function updateUI() { 
-        document.getElementById('cookieCountDisplay').innerText = formatNum(cookies); 
-        document.getElementById('cpsDisplay').innerText = formatNum(getCps()); 
-    }
-
-    function checkAchs() {
-        let changed = false;
-        achData.forEach(a => {
-            if(!unlockedAchs.includes(a.id)) {
-                if(a.type === 'cookies' && totalEver >= a.target) { unlockedAchs.push(a.id); playSnd(achSound); changed = true; }
-                if(a.type === 'build' && buildings[a.b].anzahl >= a.target) { unlockedAchs.push(a.id); playSnd(achSound); changed = true; }
-            }
-        });
-        if(changed) renderAchs();
-    }
-
-    function saveGame() {
-        const data = { cookies, totalEver, multiplier, bData: Object.fromEntries(Object.entries(buildings).map(([k,v])=>[k,v.anzahl])), achs: unlockedAchs, offlineActive, lastSave: Date.now() };
-        localStorage.setItem('crumbl_v6_save', JSON.stringify(data));
-        if(currentUser) setDoc(doc(db, "users", currentUser.uid), { ...data, username: document.getElementById('display-name').innerText }, { merge: true });
-    }
-
-    async function loadData(d) {
-        if(!d) return;
-        cookies = d.cookies || 0; totalEver = d.totalEver || 0; multiplier = d.multiplier || 1;
-        unlockedAchs = d.achs || []; offlineActive = d.offlineActive !== undefined ? d.offlineActive : true;
-        if(d.bData) for(let k in d.bData) if(buildings[k]) { buildings[k].anzahl = d.bData[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); }
-        
-        if(offlineActive && d.lastSave) {
-            let seconds = Math.floor((Date.now() - d.lastSave) / 1000);
-            if(seconds > 20) {
-                let gain = seconds * (getCps() * 0.10);
-                if(gain > 1) {
-                    cookies += gain; totalEver += gain;
-                    document.getElementById('offlineGainDisplay').innerText = formatNum(gain);
-                    document.getElementById('offlineModal').style.display = 'flex';
-                }
-            }
+    window.buyB = (id) => {
+        if(cookies >= buildings[id].kosten) {
+            cookies -= buildings[id].kosten; buildings[id].anzahl++;
+            buildings[id].kosten = Math.floor(buildings[id].base * Math.pow(1.15, buildings[id].anzahl));
+            updateUI(); renderShop();
         }
-        updateUI(); renderShop(); renderAchs();
+    };
+
+    window.buyU = (id) => {
+        if(cookies >= upgrades[id].kosten) {
+            cookies -= upgrades[id].kosten; upgrades[id].anzahl++;
+            upgrades[id].kosten = Math.floor(upgrades[id].base * Math.pow(2.8, upgrades[id].anzahl));
+            updateUI(); renderShop();
+        }
+    };
+
+    function renderShop() {
+        document.getElementById('buildingsContainer').innerHTML = Object.entries(buildings).map(([id, b]) => `
+            <div class="shop-item">
+                <div style="font-size:2rem">${b.icon}</div>
+                <div class="item-info"><b>${b.name} (${b.anzahl})</b><br><span class="item-price">${format(b.kosten)} 🍪</span></div>
+                <button class="buy-btn" ${cookies < b.kosten ? 'disabled' : ''} onclick="buyB('${id}')">KAUFEN</button>
+            </div>`).join('');
+        document.getElementById('upgradesContainer').innerHTML = Object.entries(upgrades).map(([id, u]) => `
+            <div class="shop-item" style="border-color: var(--accent)">
+                <div style="font-size:2rem">${u.icon}</div>
+                <div class="item-info"><b>${u.name} (Lvl ${u.anzahl})</b><br><span class="item-price">${format(u.kosten)} 🍪</span></div>
+                <button class="buy-btn" style="background:var(--accent)" ${cookies < u.kosten ? 'disabled' : ''} onclick="buyU('${id}')">UPGRADE</button>
+            </div>`).join('');
     }
 
+    function renderAchs() {
+        document.getElementById('ach-count-text').innerText = unlockedAchs.length + "/" + allAchs.length;
+        document.getElementById('ach-bar-fill').style.width = (unlockedAchs.length/allAchs.length*100)+"%";
+        document.getElementById('achievementsContainer').innerHTML = allAchs.map(a => `
+            <div class="ach-card ${unlockedAchs.includes(a.id)?'unlocked':''}">
+                <div style="font-size:1.5rem; margin-right:15px;">${unlockedAchs.includes(a.id)?'🏆':'🔒'}</div>
+                <div><b>${a.title}</b><br><small>${a.desc}</small></div>
+            </div>`).join('');
+    }
+
+    document.getElementById('cookie').onclick = (e) => {
+        let cpc = 1;
+        Object.values(upgrades).forEach(u => cpc += (u.anzahl * u.power));
+        cookies += cpc; totalEver += cpc;
+        const p = document.createElement('div'); p.className = 'particle'; p.innerText = "+"+format(cpc);
+        p.style.left = e.clientX+'px'; p.style.top = e.clientY+'px';
+        document.body.appendChild(p); setTimeout(() => p.remove(), 700);
+        sounds.click.currentTime = 0; sounds.click.play().catch(()=>{});
+        updateUI();
+    };
+
+    function updateUI() {
+        let cps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+        let cpc = 1; Object.values(upgrades).forEach(u => cpc += (u.anzahl * u.power));
+        document.getElementById('cookieCountDisplay').innerText = format(cookies);
+        document.getElementById('cpsDisplay').innerText = format(cps);
+        document.getElementById('cpcDisplay').innerText = format(cpc);
+    }
+
+    // LOGIN & OFFLINE LOGIK
     onAuthStateChanged(auth, async (user) => {
         if(user) {
             currentUser = user;
             const snap = await getDoc(doc(db, "users", user.uid));
             if(snap.exists()) {
-                loadData(snap.data());
-                document.getElementById('display-name').innerText = snap.data().username || "Bäcker";
-                document.getElementById('name-display-main').innerText = snap.data().username || "Bäcker";
-            } else {
-                const local = localStorage.getItem('crumbl_v6_save');
-                if(local) loadData(JSON.parse(local));
+                const d = snap.data();
+                cookies = d.cookies || 0; totalEver = d.totalEver || 0; unlockedAchs = d.unlockedAchs || [];
+                Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anzahl = d.b[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); });
+                Object.keys(upgrades).forEach(k => { if(d.u && d.u[k]) upgrades[k].anzahl = d.u[k]; upgrades[k].kosten = Math.floor(upgrades[k].base * Math.pow(2.8, upgrades[k].anzahl)); });
+                
+                // Offline Gain Berechnung (5%)
+                if(d.lastSave) {
+                    const diff = Math.floor((Date.now() - d.lastSave) / 1000);
+                    let cps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+                    const gain = (cps * 0.05) * diff;
+                    if(gain > 1) {
+                        cookies += gain; totalEver += gain;
+                        notify("WILLKOMMEN ZURÜCK!", `Deine Betriebe haben offline ${format(gain)} Kekse generiert (5% Effizienz).`, "var(--success)");
+                    }
+                }
+
+                document.getElementById('prof-name').innerText = d.username;
+                document.getElementById('user-display-name').innerText = d.username.toUpperCase();
             }
-            document.getElementById('auth-section').style.display = 'none'; document.getElementById('user-info').style.display = 'block';
+            document.getElementById('auth-box').style.display='none'; 
+            document.getElementById('profile-box').style.display='block';
+            isLoading = false; updateUI();
         }
     });
 
-    document.getElementById('auth-btn').onclick = async () => {
-        const e = document.getElementById('emailInput').value, p = document.getElementById('passwordInput').value, u = document.getElementById('usernameInput').value;
-        const res = await signInWithEmailAndPassword(auth, e, p).catch(() => createUserWithEmailAndPassword(auth, e, p));
-        if(res.user && u) await setDoc(doc(db, "users", res.user.uid), { username: u, totalEver: totalEver || 0 }, { merge: true });
+    // TRANSFER LOGIK
+    document.getElementById('traBtn').onclick = async () => {
+        const targetName = document.getElementById('traName').value;
+        const amount = parseFloat(document.getElementById('traAmt').value);
+        if(!targetName || amount <= 0 || cookies < amount) return notify("FEHLER", "Ungültiger Betrag oder Name!", "var(--danger)");
+        
+        try {
+            const q = query(collection(db, "users"), where("username", "==", targetName), limit(1));
+            const snap = await getDocs(q);
+            if(snap.empty) return notify("FEHLER", "Spieler nicht gefunden!", "var(--danger)");
+            
+            const targetId = snap.docs[0].id;
+            cookies -= amount;
+            await setDoc(doc(db, "users", targetId), { cookies: increment(amount) }, { merge: true });
+            notify("TRANSFER ERFOLGREICH", `${format(amount)} Kekse an ${targetName} gesendet!`, "var(--accent)");
+            updateUI();
+        } catch(e) { notify("FEHLER", "Transfer fehlgeschlagen.", "var(--danger)"); }
     };
 
-    document.getElementById('logout-btn').onclick = () => { signOut(auth).then(() => location.reload()); };
-    document.getElementById('reset-btn').onclick = () => { if(confirm("Spielstand löschen?")) { localStorage.clear(); location.reload(); } };
+    document.getElementById('loginBtn').onclick = async () => {
+        const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
+        if(!n || !e || !p) return alert("Fehler: Bitte alle Felder ausfüllen!");
+        try {
+            const res = await signInWithEmailAndPassword(auth, e, p).catch(() => createUserWithEmailAndPassword(auth, e, p));
+            await setDoc(doc(db, "users", res.user.uid), { username: n, cookies, totalEver, achCount: 0 }, { merge: true });
+            location.reload();
+        } catch(err) { alert(err.message); }
+    };
 
-    // Ranking Snapshot (nach totalEver sortiert)
-    onSnapshot(query(collection(db, "users"), orderBy("totalEver", "desc"), limit(10)), (snap) => {
-        let h = ""; let i = 1;
-        snap.forEach(d => { 
-            let data = d.data(); 
-            h += `<div class="leader-card"><div class="rank-badge">#${i++}</div><div style="flex-grow:1"><b>${data.username || 'Gast'}</b><br><small>🍪 ${formatNum(data.totalEver || 0)}</small></div><div>🏆 ${data.achs ? data.achs.length : 0}</div></div>`; 
+    // GAME LOOP
+    setInterval(() => {
+        if(isLoading) return;
+        let cps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+        cookies += cps/10; totalEver += cps/10; updateUI();
+        
+        allAchs.forEach(a => {
+            if(!unlockedAchs.includes(a.id)) {
+                let ach = false;
+                if(a.type==='cookies' && totalEver >= a.target) ach = true;
+                if(a.type==='building' && buildings[a.bid].anzahl >= a.target) ach = true;
+                if(ach) {
+                    unlockedAchs.push(a.id); 
+                    notify("ERFOLG FREIGESCHALTET!", a.title, "var(--gold)");
+                    sounds.ach.play().catch(()=>{});
+                }
+            }
         });
-        document.getElementById('leaderboardContainer').innerHTML = h || "Keine Spieler gefunden.";
-    });
 
-    setInterval(saveGame, 20000);
-    setInterval(() => { cookies += getCps() / 10; totalEver += getCps() / 10; updateUI(); }, 100);
+        if(Math.random() < 0.15) {
+            const r = document.createElement('div'); r.className = 'rain-cookie'; r.innerText = '🍪';
+            r.style.left = Math.random()*100+'vw'; r.style.animationDuration = '4s';
+            document.getElementById('rain-container').appendChild(r); setTimeout(() => r.remove(), 4000);
+        }
+    }, 100);
 
-    // Hintergrund-Effekt
-    setInterval(() => { 
-        const rc = document.getElementById('rain-container');
-        const c = document.createElement('div');
-        c.className = 'rain-cookie'; c.innerText = '🍪';
-        c.style.left = Math.random() * 100 + 'vw';
-        let dur = Math.random() * 4 + 4;
-        c.style.animationDuration = dur + 's';
-        rc.appendChild(c); setTimeout(() => c.remove(), dur * 1000);
-    }, 700);
+    // AUTO SAVE
+    setInterval(() => {
+        if(currentUser && !isLoading) {
+            const bS = {}, uS = {};
+            Object.entries(buildings).forEach(([k,v])=>bS[k]=v.anzahl);
+            Object.entries(upgrades).forEach(([k,v])=>uS[k]=v.anzahl);
+            setDoc(doc(db, "users", currentUser.uid), { 
+                cookies, totalEver, b: bS, u: uS, unlockedAchs, achCount: unlockedAchs.length, lastSave: Date.now()
+            }, { merge: true });
+        }
+    }, 10000);
 
-    document.querySelectorAll('.nav-btn').forEach(btn => { 
-        btn.onclick = () => { 
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(btn.dataset.view).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            btn.classList.add('active');
-            if(btn.dataset.view === 'view-shop') renderShop();
-            if(btn.dataset.view === 'view-achievements') renderAchs();
-        }; 
-    });
-
-    renderShop(); renderAchs();
+    async function loadLeads() {
+        const q = query(collection(db, "users"), orderBy("cookies", "desc"), limit(15));
+        const s = await getDocs(q);
+        document.getElementById('leaderboardContainer').innerHTML = s.docs.map((d, i) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#151515; margin-bottom:8px; border-radius:12px; border-left: 4px solid ${i<3?'var(--gold)':'#333'}">
+                <div>
+                    <span style="font-weight:bold; color:${i<3?'var(--gold)':'#888'}">#${i+1}</span> 
+                    <span style="margin-left:10px;">${d.data().username}</span><br>
+                    <small style="color:var(--accent)">🏆 ${d.data().achCount || 0} Erfolge</small>
+                </div>
+                <b style="color:var(--primary);">${format(d.data().cookies)}</b>
+            </div>`).join('');
+    }
 </script>
 </body>
 </html>
