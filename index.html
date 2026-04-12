@@ -335,19 +335,22 @@
                 Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anzahl = d.b[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); });
                 Object.keys(upgrades).forEach(k => { if(d.u && d.u[k]) upgrades[k].anzahl = d.u[k]; upgrades[k].kosten = Math.floor(upgrades[k].base * Math.pow(2.8, upgrades[k].anzahl)); });
                 
-                // OFFLINE REPORT BERECHNEN
-                if(d.lastSave) {
-                    let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
-                    if(secondsOffline > 30) {
+             // OFFLINE REPORT BERECHNEN
+                 if(d.lastSave) {
+                     let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
+                     if(secondsOffline > 30) {
                         let tempCps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
-                        let offlineGain = tempCps * secondsOffline;
+        
+            // NEU: Multipliziert die gesamte Offline-Produktion mit 0.05 (entspricht 5%)
+                        let offlineGain = (tempCps * secondsOffline) * 0.05; 
+        
                         if(offlineGain > 1) {
-                            cookies += offlineGain; totalEver += offlineGain;
-                            document.getElementById('offlineAmount').innerText = format(offlineGain);
-                            document.getElementById('offlineModal').style.display = 'block';
-                        }
-                    }
-                }
+                           cookies += offlineGain; totalEver += offlineGain;
+                           document.getElementById('offlineAmount').innerText = format(offlineGain);
+                           document.getElementById('offlineModal').style.display = 'block';
+        }
+    }
+}
                 
                 dbCookiesSnapshot = cookies;
                 document.getElementById('prof-name').innerText = d.username;
