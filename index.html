@@ -133,6 +133,7 @@
                 <b style="color:var(--accent)">📤 KEKS-TRANSFER</b>
                 <input type="text" id="traName" placeholder="Empfänger Name">
                 <input type="number" id="traAmt" placeholder="Menge">
+                <input type="text" id="traMsg" placeholder="Nachricht (optional, max 40 Zeichen)" maxlength="40">
                 <button id="traBtn" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px; margin-top:5px; font-weight:bold;">SENDEN</button>
             </div>
             <button id="logoutBtn" style="width:100%; background:#333; color:white; border:none; padding:12px; border-radius:8px; margin-top:20px;">ABMELDEN</button>
@@ -158,6 +159,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // NEUE VARIABLEN FÜR TRANSFER
+    let currentUserName = ""; 
+    let lastTransferProcessed = Date.now();
 
     let cookies = 0, totalEver = 0, currentUser = null, isLoading = true, unlockedAchs = [];
     let leaderboardData = [];
@@ -185,7 +190,6 @@
         matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "🕶️" }
     };
 
-    // Über 200 Erfolge
     let allAchs = [];
     const buildingMilestones = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 750, 1000, 1250, 1500, 2000];
     Object.entries(buildings).forEach(([id, b]) => {
@@ -331,26 +335,26 @@
                 const d = snap.data(); 
                 cookies = d.cookies || 0; totalEver = d.totalEver || 0; unlockedAchs = d.unlockedAchs || [];
                 
+                // USERNAME SPEICHERN (WICHTIG FÜR DEN TRANSFER)
+                currentUserName = d.username;
+
                 // Gebäude/Upgrades initialisieren
                 Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anzahl = d.b[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); });
                 Object.keys(upgrades).forEach(k => { if(d.u && d.u[k]) upgrades[k].anzahl = d.u[k]; upgrades[k].kosten = Math.floor(upgrades[k].base * Math.pow(2.8, upgrades[k].anzahl)); });
                 
-             // OFFLINE REPORT BERECHNEN
-                 if(d.lastSave) {
-                     let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
-                     if(secondsOffline > 30) {
+                // OFFLINE REPORT BERECHNEN
+                if(d.lastSave) {
+                    let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
+                    if(secondsOffline > 30) {
                         let tempCps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
-        
-            // NEU: Multipliziert die gesamte Offline-Produktion mit 0.05 (entspricht 5%)
                         let offlineGain = (tempCps * secondsOffline) * 0.05; 
-        
                         if(offlineGain > 1) {
-                           cookies += offlineGain; totalEver += offlineGain;
-                           document.getElementById('offlineAmount').innerText = format(offlineGain);
-                           document.getElementById('offlineModal').style.display = 'block';
-        }
-    }
-}
+                            cookies += offlineGain; totalEver += offlineGain;
+                            document.getElementById('offlineAmount').innerText = format(offlineGain);
+                            document.getElementById('offlineModal').style.display = 'block';
+                        }
+                    }
+                }
                 
                 dbCookiesSnapshot = cookies;
                 document.getElementById('prof-name').innerText = d.username;
@@ -364,10 +368,23 @@
             onSnapshot(docRef, (docSnap) => {
                 if(docSnap.exists() && !isLoading && !transferProtectionActive) {
                     const data = docSnap.data();
+                    
+                    // NEUE LOGIK FÜR DEN EMPFANG MIT NAME & NACHRICHT
                     if (data.cookies > dbCookiesSnapshot + 20) {
                         let amt = data.cookies - dbCookiesSnapshot;
                         cookies += amt; totalEver += amt;
-                        notify("TRANSFER!", `+${format(amt)} Kekse erhalten!`, "var(--success)");
+                        
+                        if (data.lastTransfer && data.lastTransfer.ts > lastTransferProcessed) {
+                            lastTransferProcessed = data.lastTransfer.ts;
+                            let text = `+${format(amt)} Kekse!`;
+                            if (data.lastTransfer.msg) {
+                                text += `<br><span style="color:#bbb; font-style:italic;">"${data.lastTransfer.msg}"</span>`;
+                            }
+                            notify(`🎁 VON ${data.lastTransfer.sender.toUpperCase()}`, text, "var(--success)");
+                        } else {
+                            // Fallback falls es kein neues Transfer-Objekt gibt
+                            notify("TRANSFER!", `+${format(amt)} Kekse erhalten!`, "var(--success)");
+                        }
                     }
                     dbCookiesSnapshot = data.cookies;
                 }
@@ -393,15 +410,29 @@
         }
     });
 
+    // NEUE SENDEN LOGIK MIT NACHRICHT
     document.getElementById('traBtn').addEventListener('click', async () => {
-        const target = document.getElementById('traName').value.trim(), amount = Math.floor(parseFloat(document.getElementById('traAmt').value));
+        const target = document.getElementById('traName').value.trim();
+        const amount = Math.floor(parseFloat(document.getElementById('traAmt').value));
+        const msg = document.getElementById('traMsg').value.trim(); // Nachricht auslesen
+        
         if(!target || isNaN(amount) || amount <= 0 || cookies < amount) return notify("FEHLER", "Check deine Eingabe/Kontostand", "var(--danger)");
+        
         try {
             const q = query(collection(db, "users"), where("username", "==", target), limit(1)), s = await getDocs(q);
             if(s.empty) return notify("FEHLER", "User nicht gefunden", "var(--danger)");
+            
             cookies -= amount; updateUI();
-            await setDoc(doc(db, "users", s.docs[0].id), { cookies: increment(amount), totalEver: increment(amount) }, { merge: true });
+            
+            // Neues Feld 'lastTransfer' mit Sender, Nachricht und Zeitstempel mitschicken
+            await setDoc(doc(db, "users", s.docs[0].id), { 
+                cookies: increment(amount), 
+                totalEver: increment(amount),
+                lastTransfer: { sender: currentUserName, msg: msg, ts: Date.now() }
+            }, { merge: true });
+            
             notify("ERFOLG!", `${format(amount)} gesendet!`, "var(--accent)");
+            document.getElementById('traMsg').value = ''; // Input leeren
         } catch(e) { notify("FEHLER", e.message, "var(--danger)"); }
     });
 
