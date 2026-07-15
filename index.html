@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legend v2.3.0</title>
+    <title>Crumbl Clicker: Legend v2.3.2</title>
     <style>
         :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; --info: #3498db; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
@@ -28,7 +28,7 @@
         .music-toggle-btn { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .menu-open-btn { font-size: 1rem; padding: 3px 12px; display: none; } 
 
-        /* STARTBILDSCHIRM & UNTERMENÜS (MINECRAFT STYLE) */
+        /* STARTBILDSCHIRM & UNTERMENÜS */
         .menu-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
@@ -63,7 +63,6 @@
             margin-bottom: 20px;
             padding-right: 8px;
         }
-        /* Custom Scrollbar */
         .stats-scroll-area::-webkit-scrollbar { width: 6px; }
         .stats-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
         .stats-scroll-area::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -106,7 +105,7 @@
         .particle { position: fixed; color: var(--primary); font-weight: 900; pointer-events: none; z-index: 2000; animation: pFloat 0.7s ease-out forwards; }
         @keyframes pFloat { 0% { transform: translate(-50%, -50%); opacity: 1; } 100% { transform: translate(-50%, -100px); opacity: 0; } }
         
-        header { background: var(--panel); padding: 15px; text-align: center; border-bottom: 2px solid #222; position: relative; z-index: 100; }
+        header { background: var(--panel); padding: 15px; text-align: center; border-bottom: 2px solid #222; position: relative; z-index: 10; }
         #cookieCountDisplay { font-size: 2.5em; font-weight: 900; color: var(--primary); }
         
         #main-content { height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 10; }
@@ -151,14 +150,42 @@
         
         .confirm-btn { background: var(--accent); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
 
+        /* Physikalisches Konfetti (Kanonen) */
+        .confetti-particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            z-index: 100001;
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
         @media (max-width: 768px) {
             .menu-open-btn { display: inline-block; }
+            .top-right-controls {
+                flex-direction: row-reverse;
+                align-items: center;
+                top: 8px;
+                right: 10px;
+            }
+            .music-toggle-btn {
+                max-width: 110px;
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+            .menu-open-btn {
+                padding: 4px 10px;
+                font-size: 0.85rem;
+            }
+            header {
+                margin-top: 45px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="version-tag">v2.3.0 by Kudłæx</div>
+<div class="version-tag">v2.3.2 by Kudłæx</div>
 <div class="top-right-controls">
     <button id="musicToggleBtn" class="music-toggle-btn">🔇 Musik: AUS</button>
     <button id="menuOpenBtn" class="menu-open-btn" onclick="openStartMenu()">☰</button>
@@ -174,7 +201,7 @@
     </div>
 </div>
 
-<!-- EXTRA STATISTIKEN SEITE (WIE MINECRAFT OPTIONEN) -->
+<!-- EXTRA STATISTIKEN SEITE -->
 <div id="stats-menu" class="menu-overlay hidden">
     <div class="menu-subtitle">STATISTIKEN</div>
     
@@ -182,9 +209,7 @@
         <div id="stats-locked-warning" class="stats-locked-info">
             ⚠️ Starte zuerst das Spiel, um deine Statistiken zu sehen!
         </div>
-        <div id="stats-dynamic-content">
-            <!-- Befüllt sich über JS -->
-        </div>
+        <div id="stats-dynamic-content"></div>
     </div>
 
     <div class="menu-btn-container">
@@ -287,35 +312,132 @@
 
     let cookies = 0, totalEver = 0, currentUser = null, isLoading = true, unlockedAchs = [];
     let leaderboardData = [];
-    let hasStartedSession = false; // Wird true, sobald man "Spiel fortsetzen" drückt.
-    let lastOfflineGain = 0; // Hält den letzten Offline-Ertrag
-    
+    let hasStartedSession = false; 
+    let lastOfflineGain = 0; 
+    let isOfflineModalActive = false; 
+    let userHasInteracted = false; 
+    let pendingOfflineReward = false; 
+
     const sounds = { 
         click: new Audio('click.mp3'), 
-        ach: new Audio('achieve.mp3')
+        ach: new Audio('achieve.mp3'),
+        offlineReward: new Audio('Belohnung.mp3')
     };
 
     const playlist = [
         "Cookie Dream.mp3",
-        "Cookie Rumble.mp3"//,
-       // "sound3.mp3",
-       // "sound4.mp3"
+        "Cookie Rumble.mp3"
     ];
 
     let currentTrackIndex = -1;
     let currentMusic = null;
-    let isMusicPlaying = false;
+    let isMusicPlaying = false; 
     let isMenuOpen = true;
     let isStatsMenuOpen = false;
     const musicBtn = document.getElementById('musicToggleBtn');
 
-    // EXKLUSIVES MENÜ-LIED IM LOOP
+    // Menü-Themen-Audio
     const menuMusic = new Audio('CrumblClicker Theme.mp3');
     menuMusic.loop = true;
     menuMusic.volume = 0.15;
 
+    function fadeAudio(audio, targetVolume, duration = 300) {
+        if (!audio) return Promise.resolve();
+        return new Promise((resolve) => {
+            const startVolume = audio.volume;
+            const diff = targetVolume - startVolume;
+            if (diff === 0) return resolve();
+            
+            const stepTime = 15;
+            const steps = duration / stepTime;
+            const volumeStep = diff / steps;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                currentStep++;
+                let nextVolume = startVolume + (volumeStep * currentStep);
+                
+                if (nextVolume < 0) nextVolume = 0;
+                if (nextVolume > 1) nextVolume = 1;
+                
+                audio.volume = nextVolume;
+
+                if (currentStep >= steps) {
+                    clearInterval(interval);
+                    audio.volume = targetVolume;
+                    resolve();
+                }
+            }, stepTime);
+        });
+    }
+
+    // Physikalische Konfetti-Kanonen links und rechts unten
+    function launchConfettiCannons() {
+        const colors = ['#f1c40f', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#e67e22', '#ff69b4', '#ffd700'];
+        const numParticles = 60; // 60 pro Kanone = 120 Partikel
+
+        // Kanone Links (schießt nach rechts-oben)
+        createCannon(0.05, 0.9, 45, colors, numParticles);
+        // Kanone Rechts (schießt nach links-oben)
+        createCannon(0.95, 0.9, 135, colors, numParticles);
+    }
+
+    function createCannon(startXPercent, startYPercent, baseAngleDeg, colors, count) {
+        const startX = window.innerWidth * startXPercent;
+        const startY = window.innerHeight * startYPercent;
+
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-particle';
+            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = startX + 'px';
+            p.style.top = startY + 'px';
+
+            // Individueller physikalischer Vektor
+            const angleRad = (baseAngleDeg + (Math.random() * 40 - 20)) * Math.PI / 180; // Streuwinkel +/- 20 Grad
+            const speed = Math.random() * 14 + 10; // Abschussgeschwindigkeit
+            
+            let vx = Math.cos(angleRad) * speed;
+            let vy = -Math.sin(angleRad) * speed; // Minus = nach oben fliegen
+            
+            let posX = startX;
+            let posY = startY;
+            let gravity = 0.35; // Zieht Partikel nach unten
+            let drag = 0.98; // Luftwiderstand bremst horizontal und vertikal ab
+            let rotation = Math.random() * 360;
+            let rotationSpeed = Math.random() * 10 - 5;
+            let size = Math.random() * 6 + 6;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+
+            document.body.appendChild(p);
+
+            let opacity = 1;
+            function update() {
+                vx *= drag;
+                vy *= drag;
+                vy += gravity; // Schwerkraft anwenden
+                
+                posX += vx;
+                posY += vy;
+                rotation += rotationSpeed;
+                opacity -= 0.012; // Sanftes Verblassen
+
+                p.style.transform = `translate(${posX - startX}px, ${posY - startY}px) rotate(${rotation}deg)`;
+                p.style.opacity = opacity;
+
+                if (opacity > 0 && posY < window.innerHeight + 50) {
+                    requestAnimationFrame(update);
+                } else {
+                    p.remove();
+                }
+            }
+            requestAnimationFrame(update);
+        }
+    }
+
     function playRandomTrack() {
-        if (playlist.length === 0 || isMenuOpen) return;
+        if (playlist.length === 0 || isMenuOpen || isOfflineModalActive) return;
 
         if (currentMusic) {
             currentMusic.pause();
@@ -338,10 +460,8 @@
 
         if (isMusicPlaying) {
             currentMusic.play()
-                .then(() => {
-                    updateMusicButtonUI(trackName);
-                })
-                .catch(err => console.log("Abspiel-Fehler:", err));
+                .then(() => { updateMusicButtonUI(trackName); })
+                .catch(err => console.log("Fehler beim Trackstart:", err));
         }
     }
 
@@ -362,13 +482,14 @@
             musicBtn.innerText = "🔇 Musik: AUS";
         } else {
             isMusicPlaying = true;
-            if (isMenuOpen) {
-                menuMusic.play().catch(err => console.log(err));
-                musicBtn.innerText = "🔊 Musik: Menü";
+            if (isOfflineModalActive) {
+                musicBtn.innerText = "🔊 Musik: AN (Stumm)";
+            } else if (isMenuOpen) {
+                menuMusic.volume = 0.15;
+                menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{});
             } else {
                 if (currentMusic) {
-                    currentMusic.play().catch(err => console.log(err));
-                    updateMusicButtonUI(playlist[currentTrackIndex]);
+                    currentMusic.play().then(() => { updateMusicButtonUI(playlist[currentTrackIndex]); }).catch(() => { playRandomTrack(); });
                 } else {
                     playRandomTrack();
                 }
@@ -381,16 +502,37 @@
         toggleMusic();
     });
 
+    // Erster Klick entsperrt das Audiosystem NUR für die Menü-Musik, startet aber KEINE Belohnung!
     window.addEventListener('click', () => {
-        if (!isMusicPlaying) {
-            isMusicPlaying = true;
+        if (!userHasInteracted) {
+            userHasInteracted = true;
+            isMusicPlaying = true; 
+
             if (isMenuOpen) {
+                menuMusic.volume = 0.15;
                 menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{});
-            } else {
-                playRandomTrack();
             }
         }
-    }, { once: true });
+    }, { once: false });
+
+    // Spielt Jingle & wirft Konfetti erst ab, wenn die Session gestartet wird
+    function triggerOfflineRewardVisuals() {
+        isOfflineModalActive = true;
+        document.getElementById('offlineModal').style.display = 'block';
+        pendingOfflineReward = false;
+
+        // Musik stummschalten
+        menuMusic.pause();
+        if (currentMusic) currentMusic.pause();
+        musicBtn.innerText = "🔊 Musik: AN (Stumm)";
+
+        // Kanonen zünden!
+        launchConfettiCannons();
+        
+        sounds.offlineReward.volume = 0.25;
+        sounds.offlineReward.currentTime = 0;
+        sounds.offlineReward.play().catch(e => console.log("Fehler beim Abspielen des Jingles:", e));
+    }
 
     // NAVIGATION FÜR MENÜS
     window.openStartMenu = () => {
@@ -400,22 +542,42 @@
         document.getElementById('start-menu').classList.remove('hidden');
         updateMenuButtonsUI();
         
-        if (currentMusic) currentMusic.pause();
-        if (isMusicPlaying) {
-            menuMusic.play().catch(()=>{});
+        if (isMusicPlaying && userHasInteracted) {
+            if (currentMusic) {
+                fadeAudio(currentMusic, 0, 300).then(() => { if (isMenuOpen) currentMusic.pause(); });
+            }
+            menuMusic.volume = 0;
+            menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15, 300); }).catch(()=>{});
             musicBtn.innerText = "🔊 Musik: Menü";
         }
     };
 
     window.continueGame = () => {
-        hasStartedSession = true; // Spiel-Sitzung offiziell begonnen!
+        hasStartedSession = true; 
         isMenuOpen = false;
         document.getElementById('start-menu').classList.add('hidden');
         document.getElementById('stats-menu').classList.add('hidden');
         
-        menuMusic.pause();
-        if (isMusicPlaying) {
-            playRandomTrack();
+        // Erst HIER wird der Jingle & das Konfetti getriggert, wenn eine Belohnung aussteht!
+        if (pendingOfflineReward) {
+            triggerOfflineRewardVisuals();
+        } else {
+            // Normaler Spielstart ohne Offline-Ertrag
+            if (isMusicPlaying && userHasInteracted) {
+                fadeAudio(menuMusic, 0, 300).then(() => { if (!isMenuOpen) menuMusic.pause(); });
+
+                if (!isOfflineModalActive) {
+                    if (currentMusic) {
+                        currentMusic.volume = 0;
+                        currentMusic.play().then(() => {
+                            fadeAudio(currentMusic, 0.15, 300);
+                            updateMusicButtonUI(playlist[currentTrackIndex]);
+                        }).catch(() => { playRandomTrack(); });
+                    } else {
+                        playRandomTrack();
+                    }
+                }
+            }
         }
     };
 
@@ -450,7 +612,6 @@
 
         warningBox.style.display = "none";
         
-        // Berechnungen für komplexe Statistiken
         let cps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
         let cpc = 1; Object.values(upgrades).forEach(u => cpc += (u.anzahl * u.power));
         
@@ -537,7 +698,6 @@
         if(viewId === 'view-leaderboard') loadLeads();
     }
 
-    // ESC-Taste Event Listener
     window.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
             if (isStatsMenuOpen) {
@@ -609,7 +769,29 @@
         document.body.appendChild(p); setTimeout(() => p.remove(), 5000);
     }
 
-    window.closeOfflineModal = () => { document.getElementById('offlineModal').style.display = 'none'; };
+    // OFFLINE MODAL SCHLIESSEN
+    window.closeOfflineModal = () => { 
+        document.getElementById('offlineModal').style.display = 'none'; 
+        isOfflineModalActive = false;
+
+        sounds.offlineReward.pause();
+        sounds.offlineReward.currentTime = 0;
+
+        if (isMusicPlaying) {
+            if (isMenuOpen) {
+                menuMusic.volume = 0;
+                menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15, 400); }).catch(()=>{});
+                musicBtn.innerText = "🔊 Musik: Menü";
+            } else {
+                if (currentMusic) {
+                    currentMusic.volume = 0;
+                    currentMusic.play().then(() => { fadeAudio(currentMusic, 0.15, 400); }).catch(() => { playRandomTrack(); });
+                } else {
+                    playRandomTrack();
+                }
+            }
+        }
+    };
 
     document.getElementById('main-nav').addEventListener('click', (e) => {
         const btn = e.target.closest('.nav-btn'); if (!btn) return;
@@ -736,9 +918,12 @@
                         let offlineGain = (tempCps * secondsOffline) * 0.05; 
                         if(offlineGain > 1) {
                             cookies += offlineGain; totalEver += offlineGain;
-                            lastOfflineGain = offlineGain; // Setzt die Offline-Gewinn-Statistik
+                            lastOfflineGain = offlineGain; 
                             document.getElementById('offlineAmount').innerText = format(offlineGain);
-                            document.getElementById('offlineModal').style.display = 'block';
+                            
+                            // Wichtig: Wir merken uns nur, dass eine Belohnung bereitsteht.
+                            // Sie wird erst gezündet, wenn der Spieler auf "Spiel fortsetzen" drückt.
+                            pendingOfflineReward = true;
                         }
                     }
                 }
