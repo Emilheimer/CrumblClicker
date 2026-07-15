@@ -3,14 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legend v2.2.4</title>
+    <title>Crumbl Clicker: Legend v2.3.0</title>
     <style>
         :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; --info: #3498db; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
         .version-tag { position: fixed; top: 12px; left: 15px; font-size: 0.8rem; color: #666; font-weight: bold; z-index: 1000; pointer-events: none; }
         
-        /* Benachrichtigungen oben rechts */
-        .game-notification { position: fixed; top: 20px; right: 20px; background: #1a1a1a; border: 2px solid var(--primary); border-radius: 12px; padding: 15px; color: white; z-index: 10000; animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards; box-shadow: 0 0 20px rgba(0,0,0,0.5); min-width: 220px; }
+        /* Steuerungs-Buttons oben rechts */
+        .top-right-controls { position: fixed; top: 10px; right: 15px; display: flex; gap: 8px; z-index: 1001; }
+        
+        .music-toggle-btn, .menu-open-btn { 
+            background: rgba(255, 255, 255, 0.07); 
+            border: 1px solid #333; 
+            color: var(--text); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+        }
+        .music-toggle-btn:hover, .menu-open-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--primary); }
+        .music-toggle-btn:active, .menu-open-btn:active { transform: scale(0.95); }
+        .music-toggle-btn { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .menu-open-btn { font-size: 1rem; padding: 3px 12px; display: none; } 
+
+        /* STARTBILDSCHIRM & UNTERMENÜS (MINECRAFT STYLE) */
+        .menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+            z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .menu-overlay.hidden { opacity: 0; pointer-events: none; transform: scale(1.03); }
+        
+        .menu-title { font-size: 3rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 20px rgba(241, 196, 15, 0.4); margin-bottom: 30px; letter-spacing: 2px; text-align: center; }
+        .menu-subtitle { font-size: 1.8rem; font-weight: bold; color: var(--accent); margin-bottom: 20px; text-shadow: 0 0 15px rgba(52, 152, 219, 0.3); }
+        
+        .menu-btn-container { display: flex; flex-direction: column; gap: 12px; width: 85%; max-width: 320px; }
+        
+        .menu-btn {
+            background: #1c1c1c; border: 2px solid #333; color: white; padding: 14px; border-radius: 12px;
+            font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-align: center;
+        }
+        .menu-btn:hover:not(:disabled) { background: #252525; border-color: var(--primary); box-shadow: 0 0 15px rgba(241, 196, 15, 0.3); transform: translateY(-2px); }
+        .menu-btn:active:not(:disabled) { transform: scale(0.95); }
+        .menu-btn:disabled { background: #111; border-color: #222; color: #444; cursor: not-allowed; box-shadow: none; }
+        
+        .menu-btn.primary-btn { background: var(--success); border-color: #27ae60; }
+        .menu-btn.primary-btn:hover:not(:disabled) { background: #2ecc71; border-color: var(--primary); box-shadow: 0 0 15px rgba(46, 204, 113, 0.4); }
+
+        /* SCROLLBARER STATS BEREICH */
+        .stats-scroll-area {
+            width: 90%;
+            max-width: 440px;
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 8px;
+        }
+        /* Custom Scrollbar */
+        .stats-scroll-area::-webkit-scrollbar { width: 6px; }
+        .stats-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .stats-scroll-area::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .stats-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .stats-section-title {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 20px 0 8px 0;
+            border-bottom: 1px solid #222;
+            padding-bottom: 4px;
+        }
+        .stats-section-title:first-of-type { margin-top: 0; }
+
+        .stats-grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+        .stats-grid-item {
+            background: rgba(0,0,0,0.4); border: 2px solid #1c1c1c; border-radius: 10px; padding: 10px 14px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #bbb;
+        }
+        .stats-grid-item b { color: var(--text); font-size: 0.95rem; }
+        .stats-locked-info { font-size: 0.85rem; color: var(--danger); text-align: center; margin-bottom: 15px; width: 100%; font-weight: bold; }
+        
+        /* Benachrichtigungen */
+        .game-notification { position: fixed; top: 55px; right: 20px; background: #1a1a1a; border: 2px solid var(--primary); border-radius: 12px; padding: 15px; color: white; z-index: 10000; animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards; box-shadow: 0 0 20px rgba(0,0,0,0.5); min-width: 220px; }
         @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
         
@@ -27,7 +112,7 @@
         #main-content { height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 80px; position: relative; z-index: 10; }
         .view { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { transform: opacity: 1; } }
         
         #view-keks { text-align: center; padding-top: 50px; }
         #cookie { width: 55vw; max-width: 200px; cursor: pointer; transition: transform 0.05s; }
@@ -65,11 +150,48 @@
         .ach-badge { display: inline-block; background: #222; padding: 5px 10px; margin: 3px; border-radius: 15px; font-size: 0.7rem; color: var(--gold); border: 1px solid #444; }
         
         .confirm-btn { background: var(--accent); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
+
+        @media (max-width: 768px) {
+            .menu-open-btn { display: inline-block; }
+        }
     </style>
 </head>
 <body>
 
-<div class="version-tag">v2.2.4 by Emilheimer</div>
+<div class="version-tag">v2.3.0 by Kudłæx</div>
+<div class="top-right-controls">
+    <button id="musicToggleBtn" class="music-toggle-btn">🔇 Musik: AUS</button>
+    <button id="menuOpenBtn" class="menu-open-btn" onclick="openStartMenu()">☰</button>
+</div>
+
+<!-- STARTBILDSCHIRM (HAUPTMENÜ) -->
+<div id="start-menu" class="menu-overlay">
+    <div class="menu-title">CRUMBL CLICKER</div>
+    <div class="menu-btn-container">
+        <button id="menu-continue-btn" class="menu-btn primary-btn" disabled onclick="continueGame()">Spiel fortsetzen</button>
+        <button id="menu-stats-btn" class="menu-btn" onclick="openStatsMenu()">Statistiken</button>
+        <button id="menu-auth-btn" class="menu-btn" onclick="goToAuthTab()">Einloggen / Registrieren</button>
+    </div>
+</div>
+
+<!-- EXTRA STATISTIKEN SEITE (WIE MINECRAFT OPTIONEN) -->
+<div id="stats-menu" class="menu-overlay hidden">
+    <div class="menu-subtitle">STATISTIKEN</div>
+    
+    <div class="stats-scroll-area">
+        <div id="stats-locked-warning" class="stats-locked-info">
+            ⚠️ Starte zuerst das Spiel, um deine Statistiken zu sehen!
+        </div>
+        <div id="stats-dynamic-content">
+            <!-- Befüllt sich über JS -->
+        </div>
+    </div>
+
+    <div class="menu-btn-container">
+        <button class="menu-btn" onclick="closeStatsMenu()">Fertig</button>
+    </div>
+</div>
+
 <div id="rain-container"></div>
 
 <div id="offlineModal" class="modal">
@@ -125,7 +247,7 @@
             <input type="text" id="regName" placeholder="Anzeigename">
             <input type="email" id="regEmail" placeholder="E-Mail">
             <input type="password" id="regPass" placeholder="Passwort">
-            <button id="loginBtn" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; margin-top:10px;">BETRETEN</button>
+            <button id="loginBtn" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; margin-top:10px;">LOGIN/REGISTRIEREN</button>
         </div>
         <div id="profile-box" class="box" style="display:none; text-align:center;">
             <h2 id="prof-name" style="color:var(--primary)">...</h2>
@@ -133,7 +255,7 @@
                 <b style="color:var(--accent)">📤 KEKS-TRANSFER</b>
                 <input type="text" id="traName" placeholder="Empfänger Name">
                 <input type="number" id="traAmt" placeholder="Menge">
-                <input type="text" id="traMsg" placeholder="Nachricht (optional, max 40 Zeichen)" maxlength="40">
+                <input type="text" id="traMsg" placeholder="Nachricht (optional, max 90 Zeichen)" maxlength="90">
                 <button id="traBtn" style="width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px; margin-top:5px; font-weight:bold;">SENDEN</button>
             </div>
             <button id="logoutBtn" style="width:100%; background:#333; color:white; border:none; padding:12px; border-radius:8px; margin-top:20px;">ABMELDEN</button>
@@ -145,7 +267,7 @@
 <nav id="main-nav">
     <div class="nav-btn active" data-view="view-keks"><span>🍪</span><br><span>HOME</span></div>
     <div class="nav-btn" data-view="view-shop"><span>🏪</span><br><span>SHOP</span></div>
-    <div class="nav-btn" data-view="view-achievements"><span>🏆</span><br><span>LOG</span></div>
+    <div class="nav-btn" data-view="view-achievements"><span>🏆</span><br><span>ERFOLGE</span></div>
     <div class="nav-btn" data-view="view-leaderboard"><span>📊</span><br><span>RANK</span></div>
     <div class="nav-btn" data-view="view-profile"><span>👤</span><br><span>USER</span></div>
 </nav>
@@ -160,13 +282,284 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // NEUE VARIABLEN FÜR TRANSFER
     let currentUserName = ""; 
     let lastTransferProcessed = Date.now();
 
     let cookies = 0, totalEver = 0, currentUser = null, isLoading = true, unlockedAchs = [];
     let leaderboardData = [];
-    const sounds = { click: new Audio('click.mp3'), ach: new Audio('achieve.mp3') };
+    let hasStartedSession = false; // Wird true, sobald man "Spiel fortsetzen" drückt.
+    let lastOfflineGain = 0; // Hält den letzten Offline-Ertrag
+    
+    const sounds = { 
+        click: new Audio('click.mp3'), 
+        ach: new Audio('achieve.mp3')
+    };
+
+    const playlist = [
+        "Cookie Dream.mp3",
+        "Cookie Rumble.mp3"//,
+       // "sound3.mp3",
+       // "sound4.mp3"
+    ];
+
+    let currentTrackIndex = -1;
+    let currentMusic = null;
+    let isMusicPlaying = false;
+    let isMenuOpen = true;
+    let isStatsMenuOpen = false;
+    const musicBtn = document.getElementById('musicToggleBtn');
+
+    // EXKLUSIVES MENÜ-LIED IM LOOP
+    const menuMusic = new Audio('CrumblClicker Theme.mp3');
+    menuMusic.loop = true;
+    menuMusic.volume = 0.15;
+
+    function playRandomTrack() {
+        if (playlist.length === 0 || isMenuOpen) return;
+
+        if (currentMusic) {
+            currentMusic.pause();
+        }
+
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * playlist.length);
+        } while (randomIndex === currentTrackIndex && playlist.length > 1);
+
+        currentTrackIndex = randomIndex;
+        const trackName = playlist[currentTrackIndex];
+
+        currentMusic = new Audio(trackName);
+        currentMusic.volume = 0.15;
+
+        currentMusic.addEventListener('ended', () => {
+            playRandomTrack();
+        });
+
+        if (isMusicPlaying) {
+            currentMusic.play()
+                .then(() => {
+                    updateMusicButtonUI(trackName);
+                })
+                .catch(err => console.log("Abspiel-Fehler:", err));
+        }
+    }
+
+    function updateMusicButtonUI(trackName) {
+        if (isMenuOpen) {
+            musicBtn.innerText = "🔊 Musik: Menü";
+        } else {
+            const cleanName = trackName.replace(/\.mp3$/i, '');
+            musicBtn.innerText = `🔊 Musik: ${cleanName}`;
+        }
+    }
+
+    function toggleMusic() {
+        if (isMusicPlaying) {
+            isMusicPlaying = false;
+            menuMusic.pause();
+            if (currentMusic) currentMusic.pause();
+            musicBtn.innerText = "🔇 Musik: AUS";
+        } else {
+            isMusicPlaying = true;
+            if (isMenuOpen) {
+                menuMusic.play().catch(err => console.log(err));
+                musicBtn.innerText = "🔊 Musik: Menü";
+            } else {
+                if (currentMusic) {
+                    currentMusic.play().catch(err => console.log(err));
+                    updateMusicButtonUI(playlist[currentTrackIndex]);
+                } else {
+                    playRandomTrack();
+                }
+            }
+        }
+    }
+
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMusic();
+    });
+
+    window.addEventListener('click', () => {
+        if (!isMusicPlaying) {
+            isMusicPlaying = true;
+            if (isMenuOpen) {
+                menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{});
+            } else {
+                playRandomTrack();
+            }
+        }
+    }, { once: true });
+
+    // NAVIGATION FÜR MENÜS
+    window.openStartMenu = () => {
+        isMenuOpen = true;
+        isStatsMenuOpen = false;
+        document.getElementById('stats-menu').classList.add('hidden');
+        document.getElementById('start-menu').classList.remove('hidden');
+        updateMenuButtonsUI();
+        
+        if (currentMusic) currentMusic.pause();
+        if (isMusicPlaying) {
+            menuMusic.play().catch(()=>{});
+            musicBtn.innerText = "🔊 Musik: Menü";
+        }
+    };
+
+    window.continueGame = () => {
+        hasStartedSession = true; // Spiel-Sitzung offiziell begonnen!
+        isMenuOpen = false;
+        document.getElementById('start-menu').classList.add('hidden');
+        document.getElementById('stats-menu').classList.add('hidden');
+        
+        menuMusic.pause();
+        if (isMusicPlaying) {
+            playRandomTrack();
+        }
+    };
+
+    window.openStatsMenu = () => {
+        isStatsMenuOpen = true;
+        document.getElementById('start-menu').classList.add('hidden');
+        document.getElementById('stats-menu').classList.remove('hidden');
+        renderStatsPage();
+    };
+
+    window.closeStatsMenu = () => {
+        isStatsMenuOpen = false;
+        document.getElementById('stats-menu').classList.add('hidden');
+        document.getElementById('start-menu').classList.remove('hidden');
+    };
+
+    function renderStatsPage() {
+        const warningBox = document.getElementById('stats-locked-warning');
+        const contentDiv = document.getElementById('stats-dynamic-content');
+        
+        if (!hasStartedSession) {
+            warningBox.style.display = "block";
+            contentDiv.innerHTML = `
+                <div class="stats-grid-container">
+                    <div class="stats-grid-item"><span>🍪 Kekse auf Konto:</span><b>???</b></div>
+                    <div class="stats-grid-item"><span>📈 Kekse insgesamt:</span><b>???</b></div>
+                    <div class="stats-grid-item"><span>⚡ Produktion (CPS):</span><b>???</b></div>
+                </div>
+            `;
+            return;
+        }
+
+        warningBox.style.display = "none";
+        
+        // Berechnungen für komplexe Statistiken
+        let cps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+        let cpc = 1; Object.values(upgrades).forEach(u => cpc += (u.anzahl * u.power));
+        
+        let cpm = cps * 60;
+        let cph = cps * 3600;
+        let cpd = cps * 86400;
+        
+        let totalBuildings = Object.values(buildings).reduce((a,b) => a + b.anzahl, 0);
+        let totalUpgrades = Object.values(upgrades).reduce((a,b) => a + b.anzahl, 0);
+        let achPercent = allAchs.length > 0 ? ((unlockedAchs.length / allAchs.length) * 100).toFixed(1) : "0";
+
+        let html = `
+            <div class="stats-section-title">Allgemeine Infos</div>
+            <div class="stats-grid-container">
+                <div class="stats-grid-item"><span>🍪 Kekse auf Konto:</span><b>${format(cookies)}</b></div>
+                <div class="stats-grid-item"><span>📈 Kekse insgesamt:</span><b>${format(totalEver)}</b></div>
+                <div class="stats-grid-item"><span>🎯 Klick-Stärke (CPC):</span><b>${format(cpc)}</b></div>
+                <div class="stats-grid-item"><span>🏆 Erfolge freigeschaltet:</span><b>${unlockedAchs.length} / ${allAchs.length} (${achPercent}%)</b></div>
+            </div>
+
+            <div class="stats-section-title">Produktions-Raten</div>
+            <div class="stats-grid-container">
+                <div class="stats-grid-item"><span>⏱️ Pro Sekunde (CPS):</span><b>${format(cps)}</b></div>
+                <div class="stats-grid-item"><span>⏰ Pro Minute (CPM):</span><b>${format(cpm)}</b></div>
+                <div class="stats-grid-item"><span>📅 Pro Stunde (CPH):</span><b>${format(cph)}</b></div>
+                <div class="stats-grid-item"><span>☀️ Pro Tag (CPD):</span><b>${format(cpd)}</b></div>
+            </div>
+
+            <div class="stats-section-title">Inaktivität & Offline</div>
+            <div class="stats-grid-container">
+                <div class="stats-grid-item"><span>💤 Letzter Offline-Ertrag:</span><b>${lastOfflineGain > 0 ? format(lastOfflineGain) + ' 🍪' : 'Keine offline Produktion'}</b></div>
+            </div>
+
+            <div class="stats-section-title">Deine Gebäude (${totalBuildings} gesamt)</div>
+            <div class="stats-grid-container">
+        `;
+
+        Object.entries(buildings).forEach(([id, b]) => {
+            let bCps = b.cps * b.anzahl;
+            html += `
+                <div class="stats-grid-item">
+                    <span>${b.icon} ${b.name}:</span>
+                    <b>${b.anzahl}x <small style="color:#666; font-size:0.7rem;">(+${format(bCps)} CPS)</small></b>
+                </div>
+            `;
+        });
+
+        html += `
+            </div>
+            <div class="stats-section-title">Deine Upgrades (${totalUpgrades} gesamt)</div>
+            <div class="stats-grid-container">
+        `;
+
+        Object.entries(upgrades).forEach(([id, u]) => {
+            let uPower = u.anzahl * u.power;
+            html += `
+                <div class="stats-grid-item">
+                    <span>${u.icon} ${u.name}:</span>
+                    <b>Stufe ${u.anzahl} <small style="color:#666; font-size:0.7rem;">(+${format(uPower)} CPC)</small></b>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        contentDiv.innerHTML = html;
+    }
+
+    window.goToAuthTab = () => {
+        if (currentUser) {
+            signOut(auth).then(() => location.reload());
+        } else {
+            continueGame();
+            switchView('view-profile');
+        }
+    };
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view, .nav-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+        const correspondingBtn = document.querySelector(`[data-view="${viewId}"]`);
+        if (correspondingBtn) correspondingBtn.classList.add('active');
+        if(viewId === 'view-shop') renderShop();
+        if(viewId === 'view-achievements') renderAchs();
+        if(viewId === 'view-leaderboard') loadLeads();
+    }
+
+    // ESC-Taste Event Listener
+    window.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            if (isStatsMenuOpen) {
+                closeStatsMenu();
+            } else if (!isMenuOpen && !isLoading) {
+                openStartMenu();
+            } else if (isMenuOpen && !document.getElementById('menu-continue-btn').disabled) {
+                continueGame();
+            }
+        }
+    });
+
+    function updateMenuButtonsUI() {
+        const authBtn = document.getElementById('menu-auth-btn');
+        if (currentUser) {
+            authBtn.innerText = "Ausloggen";
+            authBtn.style.borderColor = "var(--danger)";
+        } else {
+            authBtn.innerText = "Einloggen / Registrieren";
+            authBtn.style.borderColor = "#333";
+        }
+    }
 
     const buildings = {
         maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "🖱️" },
@@ -220,12 +613,7 @@
 
     document.getElementById('main-nav').addEventListener('click', (e) => {
         const btn = e.target.closest('.nav-btn'); if (!btn) return;
-        document.querySelectorAll('.view, .nav-btn').forEach(el => el.classList.remove('active'));
-        const viewId = btn.getAttribute('data-view');
-        document.getElementById(viewId).classList.add('active'); btn.classList.add('active');
-        if(viewId === 'view-shop') renderShop();
-        if(viewId === 'view-achievements') renderAchs();
-        if(viewId === 'view-leaderboard') loadLeads();
+        switchView(btn.getAttribute('data-view'));
     });
 
     window.buyB = (id) => {
@@ -321,6 +709,7 @@
         document.getElementById('cookieCountDisplay').innerText = format(cookies);
         document.getElementById('cpsDisplay').innerText = format(cps);
         document.getElementById('cpcDisplay').innerText = format(cpc);
+        updateMenuButtonsUI();
     }
 
     let dbCookiesSnapshot = 0;
@@ -335,14 +724,11 @@
                 const d = snap.data(); 
                 cookies = d.cookies || 0; totalEver = d.totalEver || 0; unlockedAchs = d.unlockedAchs || [];
                 
-                // USERNAME SPEICHERN (WICHTIG FÜR DEN TRANSFER)
                 currentUserName = d.username;
 
-                // Gebäude/Upgrades initialisieren
                 Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anzahl = d.b[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); });
                 Object.keys(upgrades).forEach(k => { if(d.u && d.u[k]) upgrades[k].anzahl = d.u[k]; upgrades[k].kosten = Math.floor(upgrades[k].base * Math.pow(2.8, upgrades[k].anzahl)); });
                 
-                // OFFLINE REPORT BERECHNEN
                 if(d.lastSave) {
                     let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
                     if(secondsOffline > 30) {
@@ -350,6 +736,7 @@
                         let offlineGain = (tempCps * secondsOffline) * 0.05; 
                         if(offlineGain > 1) {
                             cookies += offlineGain; totalEver += offlineGain;
+                            lastOfflineGain = offlineGain; // Setzt die Offline-Gewinn-Statistik
                             document.getElementById('offlineAmount').innerText = format(offlineGain);
                             document.getElementById('offlineModal').style.display = 'block';
                         }
@@ -361,6 +748,8 @@
                 document.getElementById('user-display-name').innerText = d.username.toUpperCase();
             }
             document.getElementById('auth-box').style.display='none'; document.getElementById('profile-box').style.display='block';
+            
+            document.getElementById('menu-continue-btn').removeAttribute('disabled');
             isLoading = false; updateUI();
 
             setTimeout(() => { transferProtectionActive = false; }, 5000);
@@ -369,7 +758,6 @@
                 if(docSnap.exists() && !isLoading && !transferProtectionActive) {
                     const data = docSnap.data();
                     
-                    // NEUE LOGIK FÜR DEN EMPFANG MIT NAME & NACHRICHT
                     if (data.cookies > dbCookiesSnapshot + 20) {
                         let amt = data.cookies - dbCookiesSnapshot;
                         cookies += amt; totalEver += amt;
@@ -382,13 +770,16 @@
                             }
                             notify(`🎁 VON ${data.lastTransfer.sender.toUpperCase()}`, text, "var(--success)");
                         } else {
-                            // Fallback falls es kein neues Transfer-Objekt gibt
                             notify("TRANSFER!", `+${format(amt)} Kekse erhalten!`, "var(--success)");
                         }
                     }
                     dbCookiesSnapshot = data.cookies;
                 }
             });
+        } else {
+            document.getElementById('menu-continue-btn').removeAttribute('disabled');
+            isLoading = false;
+            updateUI();
         }
     });
 
@@ -410,11 +801,10 @@
         }
     });
 
-    // NEUE SENDEN LOGIK MIT NACHRICHT
     document.getElementById('traBtn').addEventListener('click', async () => {
         const target = document.getElementById('traName').value.trim();
         const amount = Math.floor(parseFloat(document.getElementById('traAmt').value));
-        const msg = document.getElementById('traMsg').value.trim(); // Nachricht auslesen
+        const msg = document.getElementById('traMsg').value.trim(); 
         
         if(!target || isNaN(amount) || amount <= 0 || cookies < amount) return notify("FEHLER", "Check deine Eingabe/Kontostand", "var(--danger)");
         
@@ -424,7 +814,6 @@
             
             cookies -= amount; updateUI();
             
-            // Neues Feld 'lastTransfer' mit Sender, Nachricht und Zeitstempel mitschicken
             await setDoc(doc(db, "users", s.docs[0].id), { 
                 cookies: increment(amount), 
                 totalEver: increment(amount),
@@ -432,7 +821,7 @@
             }, { merge: true });
             
             notify("ERFOLG!", `${format(amount)} gesendet!`, "var(--accent)");
-            document.getElementById('traMsg').value = ''; // Input leeren
+            document.getElementById('traMsg').value = ''; 
         } catch(e) { notify("FEHLER", e.message, "var(--danger)"); }
     });
 
