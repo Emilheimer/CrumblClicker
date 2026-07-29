@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legend v2.6.1</title>
+    <title>Crumbl Clicker: Legend v2.6.0</title>
     <style>
         :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; --info: #3498db; --token: #9b59b6; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
@@ -176,7 +176,7 @@
 </head>
 <body>
 
-<div class="version-tag">v2.6.1 by Kudłæx</div>
+<div class="version-tag">v2.6.0 by Kudłæx</div>
 <div class="top-right-controls">
     <button id="musicToggleBtn" class="music-toggle-btn">🔇 Musik: AUS</button>
     <button id="menuOpenBtn" class="menu-open-btn" onclick="openStartMenu()">☰</button>
@@ -190,8 +190,8 @@
         <div class="menu-btn-container">
             <button id="menu-continue-btn" class="menu-btn primary-btn" disabled onclick="continueGame()">Spiel fortsetzen</button>
             <button id="menu-stats-btn" class="menu-btn" onclick="openStatsMenu()">Statistiken</button>
-            <button id="menu-skins-btn" class="menu-btn secondary-btn" onclick="openSkinsMenu()">Skins �</button>
-            <button id="menu-options-btn" class="menu-btn" onclick="openOptionsMenu()">Optionen ��</button>
+            <button id="menu-skins-btn" class="menu-btn secondary-btn" onclick="openSkinsMenu()">Skins 🎭</button>
+            <button id="menu-options-btn" class="menu-btn" onclick="openOptionsMenu()">Optionen ⚙️</button>
         </div>
     </div>
 </div>
@@ -202,7 +202,7 @@
     <div class="menu-content-wrapper">
         <div class="menu-subtitle">STATISTIKEN</div>
         <div class="stats-scroll-area">
-            <div id="stats-locked-warning" class="stats-locked-info">�� Starte zuerst das Spiel, um deine Statistiken zu sehen!</div>
+            <div id="stats-locked-warning" class="stats-locked-info">⚠️ Starte zuerst das Spiel, um deine Statistiken zu sehen!</div>
             <div id="stats-dynamic-content"></div>
         </div>
         <div class="menu-btn-container"><button class="menu-btn" onclick="closeStatsMenu()">Zurück</button></div>
@@ -228,14 +228,14 @@
         <div class="stats-scroll-area">
             <div class="option-section-title">Lautstärke-Einstellungen</div>
             <div class="audio-setting-row">
-                <label>� Musik</label>
+                <label>🎵 Musik</label>
                 <div class="audio-slider-container">
                     <input type="range" id="volumeMusic" class="audio-slider" min="0" max="100" value="50">
                     <span id="volumeMusicText" class="audio-vol-text">50%</span>
                 </div>
             </div>
             <div class="audio-setting-row">
-                <label>� Effekte (VFX)</label>
+                <label>🔊 Effekte (VFX)</label>
                 <div class="audio-slider-container">
                     <input type="range" id="volumeVFX" class="audio-slider" min="0" max="100" value="50">
                     <span id="volumeVFXText" class="audio-vol-text">50%</span>
@@ -257,7 +257,7 @@
                 <button id="logoutBtn" style="width:100%; background:#222; color:white; border:1px solid #444; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">ABMELDEN</button>
             </div>
             <div id="options-danger-box" class="danger-zone" style="display:none;">
-                <b style="color:var(--danger)">�� GEFAHRENZONE</b>
+                <b style="color:var(--danger)">⚠️ GEFAHRENZONE</b>
                 <p style="color:#888; font-size:0.75rem; margin:5px 0 10px 0;">Das Löschen deines Accounts kann nicht rückgängig gemacht werden!</p>
                 <button id="resetBtn" style="width:100%; background:var(--danger); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">ACCOUNT LÖSCHEN</button>
             </div>
@@ -303,7 +303,7 @@
     <div style="font-size: 0.8rem; color: #888;">
         <span id="cpsDisplay">0</span> CPS | <span id="cpcDisplay">1</span> PRO KLICK
     </div>
-    <div id="activeBoosterBanner" class="booster-banner" style="display:none;">� 1.25x BOOSTER AKTIV (19:59)</div>
+    <div id="activeBoosterBanner" class="booster-banner" style="display:none;">⚡ 1.25x BOOSTER AKTIV (19:59)</div>
 </header>
 
 <div id="main-content">
@@ -330,7 +330,7 @@
                 <span id="ach-token-display" style="color:#fff; font-size:1rem;">0</span>
             </div>
             <div style="display:flex; gap:8px;">
-                <button class="token-shop-btn" onclick="openTokenShop()">�� Token Shop</button>
+                <button class="token-shop-btn" onclick="openTokenShop()">🛍️ Token Shop</button>
                 <button id="rebirthBtn" class="rebirth-btn" disabled onclick="triggerRebirth()">🔄 Rebirth (Ab 100)</button>
             </div>
         </div>
@@ -357,10 +357,10 @@
 </div>
 
 <nav id="main-nav">
-    <div class="nav-btn active" data-view="view-keks"><span>�</span><br><span>HOME</span></div>
-    <div class="nav-btn" data-view="view-shop"><span>�</span><br><span>SHOP</span></div>
-    <div class="nav-btn" data-view="view-achievements"><span>�</span><br><span>ERFOLGE</span></div>
-    <div class="nav-btn" data-view="view-leaderboard"><span>�</span><br><span>RANK</span></div>
+    <div class="nav-btn active" data-view="view-keks"><span>🍪</span><br><span>HOME</span></div>
+    <div class="nav-btn" data-view="view-shop"><span>🏪</span><br><span>SHOP</span></div>
+    <div class="nav-btn" data-view="view-achievements"><span>🏆</span><br><span>ERFOLGE</span></div>
+    <div class="nav-btn" data-view="view-leaderboard"><span>📊</span><br><span>RANK</span></div>
     <div class="nav-btn" data-view="view-profile"><span>📦</span><br><span>TRANSFER</span></div>
 </nav>
 
@@ -398,11 +398,11 @@
     // Skin System
     let activeSkinId = "default";
     const availableSkins = {
-        default: { name: "Klassisch", src: "cookie.png", emoji: "�", reqType: "cookies", reqValue: 0, desc: "Standard Keks" }, pancake: { name: "PanCake", src: "pancake.png", emoji: "?", reqType: "cookies", reqValue: 50000, desc: "Besitze insgesamt 50.000 Kekse" },
-        donut: { name: "Donut-Bäckerei", src: "donut.png", emoji: "�", reqType: "cookies", reqValue: 10000, desc: "Besitze 10.000 Kekse insgesamt" },
+        default: { name: "Klassisch", src: "cookie.png", emoji: "🍪", reqType: "cookies", reqValue: 0, desc: "Standard Keks" },
+        donut: { name: "Donut-Bäckerei", src: "donut.png", emoji: "🍩", reqType: "cookies", reqValue: 10000, desc: "Besitze 10.000 Kekse insgesamt" },
         cinnamonroll: { name: "Zimtschnecke", src: "cinnamon.png", emoji: "🥮", reqType: "buildings", reqValue: 400, desc: "Besitze 400 Gebäude insgesamt" },
         galaxy: { name: "Galaxie-Keks", src: "galaxy.png", emoji: "🌌", reqType: "buildings", reqValue: 200, desc: "Besitze insgesamt 200 Gebäude" },
-        apple: { name: "Apfel", src: "apple.png", emoji: "�", reqType: "cookies", reqValue: 200, desc: "Besitze insgesamt 200 Kekse (Zuckerschock)" },
+        apple: { name: "Apfel", src: "apple.png", emoji: "🍎", reqType: "cookies", reqValue: 200, desc: "Besitze insgesamt 200 Kekse (Zuckerschock)" },
         gold: { name: "Gold-Edition", src: "goldcookie.png", emoji: "👑", reqType: "cookies", reqValue: 1000000000, desc: "Besitze 1.000.000.000 Kekse insgesamt" }
     };
 
@@ -565,8 +565,8 @@
     }
 
     function updateMusicButtonUI(trackName) {
-        if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) musicBtn.innerText = "� Musik: Menü";
-        else { const cleanName = trackName.replace(/\.mp3$/i, ''); musicBtn.innerText = `� Musik: ${cleanName}`; }
+        if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) musicBtn.innerText = "🔊 Musik: Menü";
+        else { const cleanName = trackName.replace(/\.mp3$/i, ''); musicBtn.innerText = `🔊 Musik: ${cleanName}`; }
     }
 
     function toggleMusic() {
@@ -574,8 +574,8 @@
             isMusicPlaying = false; menuMusic.pause(); if (currentMusic) currentMusic.pause(); musicBtn.innerText = "🔇 Musik: AUS";
         } else {
             isMusicPlaying = true;
-            if (isOfflineModalActive) musicBtn.innerText = "� Musik: AN (Stumm)";
-            else if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "� Musik: Menü"; }).catch(()=>{}); }
+            if (isOfflineModalActive) musicBtn.innerText = "🔊 Musik: AN (Stumm)";
+            else if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{}); }
             else { if (currentMusic) { applyVolumes(); currentMusic.play().then(() => { updateMusicButtonUI(playlist[currentTrackIndex]); }).catch(() => { playRandomTrack(); }); } else playRandomTrack(); }
         }
     }
@@ -584,13 +584,13 @@
     window.addEventListener('click', () => {
         if (!userHasInteracted) {
             userHasInteracted = true; isMusicPlaying = true; 
-            if (isMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "� Musik: Menü"; }).catch(()=>{}); }
+            if (isMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{}); }
         }
     });
 
     function triggerOfflineRewardVisuals() {
         isOfflineModalActive = true; document.getElementById('offlineModal').style.display = 'block'; pendingOfflineReward = false;
-        menuMusic.pause(); if (currentMusic) currentMusic.pause(); musicBtn.innerText = "� Musik: AN (Stumm)";
+        menuMusic.pause(); if (currentMusic) currentMusic.pause(); musicBtn.innerText = "🔊 Musik: AN (Stumm)";
         launchConfettiCannons(); applyVolumes(); sounds.offlineReward.currentTime = 0; sounds.offlineReward.play().catch(()=>{});
     }
 
@@ -600,7 +600,7 @@
         document.getElementById('stats-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.add('hidden'); document.getElementById('options-menu').classList.add('hidden'); document.getElementById('start-menu').classList.remove('hidden');
         if (isMusicPlaying && userHasInteracted) {
             if (currentMusic) fadeAudio(currentMusic, 0, 300).then(() => { if (isMenuOpen) currentMusic.pause(); });
-            menuMusic.volume = 0; menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15 * musicVolumeFactor, 300); }).catch(()=>{}); musicBtn.innerText = "� Musik: Menü";
+            menuMusic.volume = 0; menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15 * musicVolumeFactor, 300); }).catch(()=>{}); musicBtn.innerText = "🔊 Musik: Menü";
         }
     };
 
@@ -654,7 +654,7 @@
             infoDiv.innerHTML = `<span style="font-size:0.75rem; color:#666; text-transform:uppercase;">Eingeloggt als</span><br><b style="color:var(--primary); font-size:1.1rem;">${currentUserName}</b><br><small style="color:#aaa;">Email: ${currentUser.email}</small>`;
             authBox.style.display = 'none'; logoutBox.style.display = 'block'; dangerBox.style.display = 'block';
         } else {
-            infoDiv.innerHTML = `<span style="font-size:0.75rem; color:#e74c3c; text-transform:uppercase;">Account-Status</span><br><b style="color:var(--danger); font-size:1.1rem;">Gast-Konto ��</b><br><small style="color:#aaa;">Melde dich an, um deinen Speicherstand zu sichern.</small>`;
+            infoDiv.innerHTML = `<span style="font-size:0.75rem; color:#e74c3c; text-transform:uppercase;">Account-Status</span><br><b style="color:var(--danger); font-size:1.1rem;">Gast-Konto ⚠️</b><br><small style="color:#aaa;">Melde dich an, um deinen Speicherstand zu sichern.</small>`;
             authBox.style.display = 'block'; logoutBox.style.display = 'none'; dangerBox.style.display = 'none';
         }
     }
@@ -663,7 +663,7 @@
         const warningBox = document.getElementById('stats-locked-warning'), contentDiv = document.getElementById('stats-dynamic-content');
         if (!hasStartedSession) {
             warningBox.style.display = "block";
-            contentDiv.innerHTML = `<div class="stats-grid-container"><div class="stats-grid-item"><span>� Kekse auf Konto:</span><b>???</b></div><div class="stats-grid-item"><span>📈 Kekse insgesamt:</span><b>???</b></div><div class="stats-grid-item"><span>� Produktion (CPS):</span><b>???</b></div></div>`;
+            contentDiv.innerHTML = `<div class="stats-grid-container"><div class="stats-grid-item"><span>🍪 Kekse auf Konto:</span><b>???</b></div><div class="stats-grid-item"><span>📈 Kekse insgesamt:</span><b>???</b></div><div class="stats-grid-item"><span>⚡ Produktion (CPS):</span><b>???</b></div></div>`;
             return;
         }
         warningBox.style.display = "none";
@@ -677,19 +677,19 @@
         let html = `
             <div class="stats-section-title">Allgemeine Infos</div>
             <div class="stats-grid-container">
-                <div class="stats-grid-item"><span>� Kekse auf Konto:</span><b>${format(cookies)}</b></div>
+                <div class="stats-grid-item"><span>🍪 Kekse auf Konto:</span><b>${format(cookies)}</b></div>
                 <div class="stats-grid-item"><span>📈 Kekse insgesamt:</span><b>${format(totalEver)}</b></div>
-                <div class="stats-grid-item"><span>� Klick-Stärke (CPC):</span><b>${format(cpc)}</b></div>
-                <div class="stats-grid-item"><span>� Erfolge freigeschaltet:</span><b>${unlockedAchs.length} / ${allAchs.length} (${achPercent}%)</b></div>
+                <div class="stats-grid-item"><span>🎯 Klick-Stärke (CPC):</span><b>${format(cpc)}</b></div>
+                <div class="stats-grid-item"><span>🏆 Erfolge freigeschaltet:</span><b>${unlockedAchs.length} / ${allAchs.length} (${achPercent}%)</b></div>
                 <div class="stats-grid-item"><span>🪙 Erfolg Tokens:</span><b style="color:var(--token);">${tokens} 🪙</b></div>
                 <div class="stats-grid-item"><span>🔄 Rebirths durchgeführt:</span><b>${rebirthCount}x</b></div>
             </div>
             <div class="stats-section-title">Produktions-Raten</div>
             <div class="stats-grid-container">
-                <div class="stats-grid-item"><span>�� Pro Sekunde (CPS):</span><b>${format(cps)} ${Date.now() < activeBooster.endTime ? `(${activeBooster.mult}x Boost)` : ''}</b></div>
-                <div class="stats-grid-item"><span>� Pro Minute (CPM):</span><b>${format(cpm)}</b></div>
+                <div class="stats-grid-item"><span>⏱️ Pro Sekunde (CPS):</span><b>${format(cps)} ${Date.now() < activeBooster.endTime ? `(${activeBooster.mult}x Boost)` : ''}</b></div>
+                <div class="stats-grid-item"><span>⏰ Pro Minute (CPM):</span><b>${format(cpm)}</b></div>
                 <div class="stats-grid-item"><span>📅 Pro Stunde (CPH):</span><b>${format(cph)}</b></div>
-                <div class="stats-grid-item"><span>☀� Pro Tag (CPD):</span><b>${format(cpd)}</b></div>
+                <div class="stats-grid-item"><span>☀️ Pro Tag (CPD):</span><b>${format(cpd)}</b></div>
             </div>
             <div class="stats-section-title">Deine Gebäude (${totalBuildings} gesamt)</div>
             <div class="stats-grid-container">`;
@@ -722,15 +722,15 @@
     });
 
     const buildings = {
-        maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "🖱�" },
+        maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "🖱️" },
         oma: { name: "Oma", kosten: 100, base: 100, cps: 1, anzahl: 0, icon: "👵" },
-        farm: { name: "Farm", kosten: 1100, base: 1100, cps: 8, anzahl: 0, icon: "�" },
-        mine: { name: "Mine", kosten: 12000, base: 12000, cps: 47, anzahl: 0, icon: "��" },
-        fabrik: { name: "Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, icon: "�" },
-        bank: { name: "Bank", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, icon: "�" },
-        tempel: { name: "Tempel", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, icon: "��" },
+        farm: { name: "Farm", kosten: 1100, base: 1100, cps: 8, anzahl: 0, icon: "🚜" },
+        mine: { name: "Mine", kosten: 12000, base: 12000, cps: 47, anzahl: 0, icon: "⛏️" },
+        fabrik: { name: "Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, icon: "🏭" },
+        bank: { name: "Bank", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, icon: "🏦" },
+        tempel: { name: "Tempel", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, icon: "🏛️" },
         zauberer: { name: "Zauberturm", kosten: 330000000, base: 330000000, cps: 44000, anzahl: 0, icon: "🧙" },
-        rakete: { name: "Rakete", kosten: 5100000000, base: 5100000000, cps: 260000, anzahl: 0, icon: "�" },
+        rakete: { name: "Rakete", kosten: 5100000000, base: 5100000000, cps: 260000, anzahl: 0, icon: "🚀" },
         zeit: { name: "Zeitmaschine", kosten: 75000000000, base: 75000000000, cps: 1600000, anzahl: 0, icon: "⌛" },
         gott: { name: "Keks-Gott", kosten: 999999999999, base: 999999999999, cps: 10000000, anzahl: 0, icon: "👼" }
     };
@@ -738,9 +738,9 @@
     const upgrades = {
         trainer: { name: "Klick-Trainer", kosten: 50, base: 50, power: 1, anzahl: 0, icon: "💪" },
         ofen: { name: "Turbo-Ofen", kosten: 5000, base: 5000, power: 15, anzahl: 0, icon: "🔥" },
-        goldmaus: { name: "Platin-Maus", kosten: 100000, base: 100000, power: 100, anzahl: 0, icon: "🖱�✨" },
-        finger: { name: "Diamond Finger", kosten: 2500000, base: 2500000, power: 1000, anzahl: 0, icon: "�" },
-        matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "🕶�" }
+        goldmaus: { name: "Platin-Maus", kosten: 100000, base: 100000, power: 100, anzahl: 0, icon: "🖱️✨" },
+        finger: { name: "Diamond Finger", kosten: 2500000, base: 2500000, power: 1000, anzahl: 0, icon: "💎" },
+        matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "🕶️" }
     };
 
     let allAchs = [];
@@ -773,7 +773,7 @@
         document.getElementById('offlineModal').style.display = 'none'; isOfflineModalActive = false;
         sounds.offlineReward.pause(); sounds.offlineReward.currentTime = 0;
         if (isMusicPlaying) {
-            if (isMenuOpen) { menuMusic.volume = 0; menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15 * musicVolumeFactor, 400); }).catch(()=>{}); musicBtn.innerText = "� Musik: Menü"; }
+            if (isMenuOpen) { menuMusic.volume = 0; menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15 * musicVolumeFactor, 400); }).catch(()=>{}); musicBtn.innerText = "🔊 Musik: Menü"; }
             else { if (currentMusic) { currentMusic.volume = 0; currentMusic.play().then(() => { fadeAudio(currentMusic, 0.15 * musicVolumeFactor, 400); }).catch(() => { playRandomTrack(); }); } else playRandomTrack(); }
         }
     };
@@ -803,13 +803,13 @@
         document.getElementById('buildingsContainer').innerHTML = Object.entries(buildings).map(([id, b]) => `
             <div class="shop-item">
                 <div style="font-size:2rem">${b.icon}</div>
-                <div class="item-info"><b>${b.name} (${b.anzahl})</b><br><span class="item-price">${format(b.kosten)} �</span></div>
+                <div class="item-info"><b>${b.name} (${b.anzahl})</b><br><span class="item-price">${format(b.kosten)} 🍪</span></div>
                 <button class="buy-btn" ${cookies < b.kosten ? 'disabled' : ''} onclick="buyB('${id}')">KAUFEN</button>
             </div>`).join('');
         document.getElementById('upgradesContainer').innerHTML = Object.entries(upgrades).map(([id, u]) => `
             <div class="shop-item" style="border-color: var(--accent)">
                 <div style="font-size:2rem">${u.icon}</div>
-                <div class="item-info"><b>${u.name} (Lvl ${u.anzahl})</b><br><span class="item-price">${format(u.kosten)} �</span></div>
+                <div class="item-info"><b>${u.name} (Lvl ${u.anzahl})</b><br><span class="item-price">${format(u.kosten)} 🍪</span></div>
                 <button class="buy-btn" style="background:var(--accent)" ${cookies < u.kosten ? 'disabled' : ''} onclick="buyU('${id}')">UPGRADE</button>
             </div>`).join('');
     }
@@ -830,7 +830,7 @@
         }
         document.getElementById('achievementsContainer').innerHTML = allAchs.map(a => `
             <div class="ach-card ${unlockedAchs.includes(a.id)?'unlocked':''}">
-                <div style="font-size:1.6rem;">${unlockedAchs.includes(a.id)?'�':'🔒'}</div>
+                <div style="font-size:1.6rem;">${unlockedAchs.includes(a.id)?'🏆':'🔒'}</div>
                 <b>${a.title}</b>
                 <small>${a.desc}</small>
             </div>`).join('');
@@ -841,7 +841,7 @@
         if (unlockedAchs.length < 100) return;
         let extra = unlockedAchs.length - 100;
         let reward = Math.floor(25 * (3 + extra * 0.05));
-        if (confirm(`�� REBIRTH WARNUNG!\n\nWenn du jetzt rebirthest, werden deine Kekse, Gebäude, Upgrades und Erfolge zurückgesetzt!\n\nAls Belohnung erhältst du: +${reward} ERFOLG TOKENS!\n\nMöchtest du jetzt rebirthen?`)) {
+        if (confirm(`⚠️ REBIRTH WARNUNG!\n\nWenn du jetzt rebirthest, werden deine Kekse, Gebäude, Upgrades und Erfolge zurückgesetzt!\n\nAls Belohnung erhältst du: +${reward} ERFOLG TOKENS!\n\nMöchtest du jetzt rebirthen?`)) {
             tokens += reward;
             rebirthCount++;
             cookies = 0;
@@ -890,7 +890,7 @@
         let dur3 = isUltraRare ? 20 : Math.floor(15 + seededRandom(seed, 10) * 6); // max 20 Minuten
         dailyShopItems.push({ 
             id: 's3', 
-            name: isUltraRare ? '� ULTRA KEKSTRAUSCH (SELTEN!)' : 'Meister-Ofen Boost', 
+            name: isUltraRare ? '⚡ ULTRA KEKSTRAUSCH (SELTEN!)' : 'Meister-Ofen Boost', 
             cost: cost3, 
             mult: mult3, 
             duration: dur3, 
@@ -923,7 +923,7 @@
                 <div>
                     <b style="color:${item.type === 'ultra-rare' ? '#ff7675' : '#fff'}; font-size:1rem;">${item.name}</b><br>
                     <span style="color:var(--gold); font-weight:bold; font-size:1.1rem;">${item.mult}x CPS Multiplikator</span><br>
-                    <small style="color:#aaa;">�� Dauer: ${item.duration} Minuten</small>
+                    <small style="color:#aaa;">⏱️ Dauer: ${item.duration} Minuten</small>
                 </div>
                 <button class="booster-buy-btn" ${tokens < item.cost ? 'disabled' : ''} onclick="buyBooster(${index})">
                     ${item.cost} 🪙
@@ -948,7 +948,7 @@
             activeBooster.name = item.name;
         }
         
-        notify("� BOOSTER AKTIVIERT!", `${item.mult}x CPS für ${item.duration} Minuten!`, "var(--gold)");
+        notify("⚡ BOOSTER AKTIVIERT!", `${item.mult}x CPS für ${item.duration} Minuten!`, "var(--gold)");
         sounds.ach.play().catch(()=>{});
         updateUI();
         renderTokenShop();
@@ -977,7 +977,7 @@
     window.openProfile = (index) => {
         const p = leaderboardData[index]; if(!p) return;
         let pCps = 0; if(p.b) Object.entries(p.b).forEach(([id, count]) => { if(buildings[id]) pCps += buildings[id].cps * count; });
-        let achHtml = p.unlockedAchs && p.unlockedAchs.length > 0 ? p.unlockedAchs.map(id => { const a = allAchs.find(x=>x.id===id); return a ? `<span class="ach-badge">� ${a.title}</span>` : ''; }).join('') : "<small style='color:#444'>Keine Erfolge</small>";
+        let achHtml = p.unlockedAchs && p.unlockedAchs.length > 0 ? p.unlockedAchs.map(id => { const a = allAchs.find(x=>x.id===id); return a ? `<span class="ach-badge">🏆 ${a.title}</span>` : ''; }).join('') : "<small style='color:#444'>Keine Erfolge</small>";
         document.getElementById('playerModalContent').innerHTML = `
             <span class="close-btn" onclick="document.getElementById('playerModal').style.display='none'">&times;</span>
             <h2 style="color:var(--primary); margin:0;">${p.username}</h2>
@@ -1016,7 +1016,7 @@
             let leftSec = Math.floor((activeBooster.endTime - Date.now()) / 1000);
             let m = Math.floor(leftSec / 60), s = leftSec % 60;
             banner.style.display = 'inline-block';
-            banner.innerText = `� ${activeBooster.mult}x BOOSTER AKTIV (${m}:${s < 10 ? '0' : ''}${s})`;
+            banner.innerText = `⚡ ${activeBooster.mult}x BOOSTER AKTIV (${m}:${s < 10 ? '0' : ''}${s})`;
         } else {
             banner.style.display = 'none';
         }
@@ -1082,7 +1082,7 @@
                             lastTransferProcessed = data.lastTransfer.ts;
                             let text = `+${format(amt)} Kekse!`;
                             if (data.lastTransfer.msg) text += `<br><span style="color:#bbb; font-style:italic;">"${data.lastTransfer.msg}"</span>`;
-                            notify(`� VON ${data.lastTransfer.sender.toUpperCase()}`, text, "var(--success)");
+                            notify(`🎁 VON ${data.lastTransfer.sender.toUpperCase()}`, text, "var(--success)");
                         } else notify("TRANSFER!", `+${format(amt)} Kekse erhalten!`, "var(--success)");
                     }
                     dbCookiesSnapshot = data.cookies;
@@ -1168,13 +1168,13 @@
                 if(check) { 
                     unlockedAchs.push(a.id); 
                     tokens++; // +1 Token pro Erfolg!
-                    notify("� ERFOLG (+1 🪙)!", a.title, "var(--gold)"); 
+                    notify("🏆 ERFOLG (+1 🪙)!", a.title, "var(--gold)"); 
                     sounds.ach.play().catch(()=>{}); 
                     if(document.getElementById('view-achievements').classList.contains('active')) renderAchs();
                 } 
             } 
         });
-        if(Math.random() < 0.1) { const r = document.createElement('div'); r.className = 'rain-cookie'; r.innerText = '�'; r.style.left = Math.random()*100+'vw'; r.style.animationDuration = '4s'; document.getElementById('rain-container').appendChild(r); setTimeout(() => r.remove(), 4000); }
+        if(Math.random() < 0.1) { const r = document.createElement('div'); r.className = 'rain-cookie'; r.innerText = '🍪'; r.style.left = Math.random()*100+'vw'; r.style.animationDuration = '4s'; document.getElementById('rain-container').appendChild(r); setTimeout(() => r.remove(), 4000); }
     }, 100);
 
     setInterval(() => { if(currentUser && !isLoading) { const bS = {}, uS = {}; Object.entries(buildings).forEach(([k,v])=>bS[k]=v.anzahl); Object.entries(upgrades).forEach(([k,v])=>uS[k]=v.anzahl); setDoc(doc(db, "users", currentUser.uid), { cookies, totalEver, b: bS, u: uS, unlockedAchs, tokens, rebirthCount, activeBooster, activeSkinId, lastSave: Date.now() }, { merge: true }).then(() => { dbCookiesSnapshot = cookies; }); } }, 10000);
