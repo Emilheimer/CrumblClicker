@@ -192,6 +192,7 @@
             <button id="menu-stats-btn" class="menu-btn" onclick="openStatsMenu()">Statistiken</button>
             <button id="menu-skins-btn" class="menu-btn secondary-btn" onclick="openSkinsMenu()">Skins 🎭</button>
             <button id="menu-options-btn" class="menu-btn" onclick="openOptionsMenu()">Optionen ⚙️</button>
+            <button id="menu-credits-btn" class="menu-btn" onclick="openCreditsMenu()">Credits 📜</button>
         </div>
     </div>
 </div>
@@ -267,6 +268,143 @@
 </div>
 
 <div id="rain-container"></div>
+
+<!-- Credits SEITE -->
+2. DAS CREDITS-FENSTER (Am Ende vom <body> einfügen)
+     ========================================== -->
+<div id="creditsModal" class="credits-modal">
+  <div class="credits-content">
+    <span class="close-credits" id="closeCredits">&times;</span>
+    <h2>📜 Credits</h2>
+    <hr class="credits-divider">
+    
+    <div class="credits-body">
+      <p><strong>Developer:</strong> Kudłæx</p>
+      <p><strong>Game Title:</strong> Crumbl Clicker</p>
+      <p><strong>Version:</strong> 2.6.0</p>
+      <p class="thanks-text">❤️ Danke fürs Spielen!</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ==========================================
+     3. STYLING (In deinen <style>-Tag einfügen)
+     ========================================== -->
+<style>
+  /* Button Styling */
+  .menu-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #d49b4b;
+    color: #ffffff;
+    border: 2px solid #8b5a2b;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .menu-btn:hover {
+    background-color: #e5ac5d;
+    transform: scale(1.05);
+  }
+
+  /* Dunkler Hintergrund-Overlay */
+  .credits-modal {
+    display: none; /* Standarmäßig unsichtbar */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px); /* Sanfter Unschärfe-Effekt */
+  }
+
+  /* Das eigentliche Credits-Fenster */
+  .credits-content {
+    background-color: #2a2a32;
+    color: #ffffff;
+    margin: 12% auto;
+    padding: 25px;
+    border: 3px solid #d49b4b;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 380px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    font-family: Arial, sans-serif;
+  }
+
+  .credits-content h2 {
+    margin-top: 0;
+    color: #e5ac5d;
+  }
+
+  .credits-divider {
+    border: 0;
+    height: 1px;
+    background: #d49b4b;
+    margin: 15px 0;
+  }
+
+  .credits-body p {
+    margin: 8px 0;
+    font-size: 15px;
+  }
+
+  .thanks-text {
+    margin-top: 15px !important;
+    color: #ffaa55;
+    font-weight: bold;
+  }
+
+  /* Schließen-Button (X) */
+  .close-credits {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .close-credits:hover {
+    color: #ffffff;
+  }
+</style>
+
+
+<!-- ==========================================
+     4. JAVASCRIPT (In deinen <script>-Tag einfügen)
+     ========================================== -->
+<script>
+  const creditsBtn = document.getElementById('creditsBtn');
+  const creditsModal = document.getElementById('creditsModal');
+  const closeCredits = document.getElementById('closeCredits');
+
+  // Öffnet das Fenster beim Klick auf den Button
+  creditsBtn.addEventListener('click', () => {
+    creditsModal.style.display = 'block';
+  });
+
+  // Schließt das Fenster beim Klick auf das "X"
+  closeCredits.addEventListener('click', () => {
+    creditsModal.style.display = 'none';
+  });
+
+  // Schließt das Fenster auch, wenn man außerhalb der Box klickt
+  window.addEventListener('click', (event) => {
+    if (event.target === creditsModal) {
+      creditsModal.style.display = 'none';
+    }
+  });
+</script>  
 
 <!-- WILLKOMMEN ZURÜCK MODAL -->
 <div id="offlineModal" class="modal">
