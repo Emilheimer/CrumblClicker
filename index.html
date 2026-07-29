@@ -101,7 +101,7 @@
         .buy-btn { background: var(--success); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; min-width: 80px; }
         .buy-btn:disabled { background: #333 !important; color: #666 !important; cursor: not-allowed; opacity: 0.5; }
         
-        /* WUNDERSCHÖNES SCHICKES ERFOLGS-GRID-LAYOUT */
+        /* ERFOLGS-GRID-LAYOUT */
         #achievementsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 5px; }
         .ach-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: #161616; padding: 12px 8px; border-radius: 12px; border: 1px solid #222; opacity: 0.25; transition: all 0.2s ease; min-height: 95px; box-sizing: border-box; }
         .ach-card.unlocked { opacity: 1; border-color: var(--gold); background: linear-gradient(145deg, #251e02, #141414); box-shadow: 0 4px 12px rgba(241, 196, 15, 0.15); }
@@ -131,7 +131,7 @@
         .leaderboard-item:hover { background: #222; transform: translateX(5px); }
         .top-rank { border-left-color: var(--gold) !important; background: linear-gradient(90deg, #1a1a00, #151515); }
         
-        /* MODAL STYLES (Token Shop optimiert und hochgesetzt gegen Nav-Bugs) */
+        /* MODAL STYLES */
         .modal { display: none; position: fixed; z-index: 100000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); }
         .modal-content { background: #111; position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); padding: 25px; border: 1px solid #333; border-radius: 20px; width: 88%; max-width: 480px; color: white; box-shadow: 0 0 40px rgba(0,0,0,1); animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; max-height: 68vh; overflow-y: auto; margin: 0; }
         @keyframes pop { from { transform: translate(-50%, -42%) scale(0.8); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
@@ -164,6 +164,13 @@
         .audio-vol-text { font-family: monospace; width: 35px; text-align: right; font-size: 0.8rem; color: #888; }
         .forgot-password-link { display: block; text-align: right; font-size: 0.75rem; color: #888; text-decoration: none; margin-top: 5px; cursor: pointer; transition: color 0.2s; }
         .forgot-password-link:hover { color: var(--primary); }
+
+        /* Credits Card Box Design */
+        .credit-box { background: rgba(0,0,0,0.4); border: 2px solid #1c1c1c; border-radius: 12px; padding: 15px; margin-bottom: 12px; text-align: left; }
+        .credit-box b { color: var(--primary); display: block; margin-bottom: 4px; }
+        .credit-box p { margin: 0; color: #bbb; font-size: 0.85rem; line-height: 1.4; }
+        .credit-link { color: var(--accent); text-decoration: none; font-weight: bold; transition: color 0.2s; display: inline-block; margin-top: 4px; }
+        .credit-link:hover { color: var(--primary); text-decoration: underline; }
 
         @media (max-width: 768px) {
             .menu-open-btn { display: inline-block; }
@@ -267,24 +274,45 @@
     </div>
 </div>
 
-<div id="rain-container"></div>
+<!-- CREDITS SEITE -->
+<div id="credits-menu" class="menu-overlay hidden">
+    <canvas id="credits-canvas" class="menu-bg-canvas"></canvas>
+    <div class="menu-content-wrapper">
+        <div class="menu-subtitle" style="color: var(--gold);">CREDITS & INFO</div>
+        <div class="stats-scroll-area">
+            <div class="option-section-title">Entwicklung</div>
+            <div class="credit-box">
+                <b>👑 Haupt-Entwickler</b>
+                <p>Kudłæx</p>
+            </div>
+            <div class="credit-box">
+                <b>🎮 Spiel</b>
+                <p>Crumbl Clicker: Legend</p>
+                <p style="font-size: 0.75rem; color: #777;">Version 2.6.1</p>
+            </div>
 
-<!-- Credits SEITE -->
-<div id="creditsPage" style="display: none;">
-  <h2>📜 Credits</h2>
-  
-  <div class="credits-info">
-    <p><strong>Entwickler:</strong> Kudłæx</p>
-    <p><strong>Spiel:</strong> Crumbl Clicker</p>
-    <p><strong>Version:</strong> 2.6.0</p>
-    <br>
-    <p>❤️ Danke fürs Spielen!</p>
-  </div>
+            <div class="option-section-title">Community & Links</div>
+            <div class="credit-box">
+                <b>💬 Discord Community</b>
+                <p>Tritt unserer Bäckerei-Community bei!</p>
+                <a href="#" class="credit-link" onclick="alert('Hier deinen Discord-Link einfügen!')">Discord Server beitreten 🚀</a>
+            </div>
+            <div class="credit-box">
+                <b>🌐 Webseite & Updates</b>
+                <p>Erfahre mehr über neue Features und Patches.</p>
+                <a href="#" class="credit-link" onclick="alert('Hier deinen Website-Link einfügen!')">Webseite besuchen 🔗</a>
+            </div>
 
-  <br>
-  <!-- Zurück-Button mit deiner normalen Button-Klasse -->
-  <button id="backFromCreditsBtn" class="menu-btn">⬅️ Zurück</button>
+            <div class="option-section-title">Danksagung</div>
+            <div class="credit-box" style="text-align: center;">
+                <p>❤️ Danke an alle Spieler und Tester fürs Spielen und Supporten!</p>
+            </div>
+        </div>
+        <div class="menu-btn-container"><button class="menu-btn" onclick="closeCreditsMenu()">Zurück</button></div>
+    </div>
 </div>
+
+<div id="rain-container"></div>
     
 <!-- WILLKOMMEN ZURÜCK MODAL -->
 <div id="offlineModal" class="modal">
@@ -302,7 +330,7 @@
     <div class="modal-content" id="playerModalContent"></div>
 </div>
 
-<!-- TOKEN SHOP MODAL (Auf 520px max-width gesetzt und zentriert) -->
+<!-- TOKEN SHOP MODAL -->
 <div id="tokenShopModal" class="modal">
     <div class="modal-content" style="max-width: 520px;">
         <span class="close-btn" onclick="closeTokenShop()">&times;</span>
@@ -434,7 +462,7 @@
     const playlist = ["Cookie Dream.mp3", "Cookie Rumble.mp3", "Soft Crumbs.mp3"];
     let currentTrackIndex = -1, currentMusic = null, isMusicPlaying = false; 
     
-    let isMenuOpen = true, isStatsMenuOpen = false, isSkinsMenuOpen = false, isOptionsMenuOpen = false;
+    let isMenuOpen = true, isStatsMenuOpen = false, isSkinsMenuOpen = false, isOptionsMenuOpen = false, isCreditsMenuOpen = false;
     const musicBtn = document.getElementById('musicToggleBtn');
     const menuMusic = new Audio('CrumblClicker Theme.mp3');
     menuMusic.loop = true;
@@ -471,12 +499,12 @@
     }
 
     // ANIMIERTER HINTERGRUND
-    const menuCanvas = document.getElementById('menu-canvas'), statsCanvas = document.getElementById('stats-canvas'), skinsCanvas = document.getElementById('skins-canvas'), optionsCanvas = document.getElementById('options-canvas');
-    let menuCtx = menuCanvas.getContext('2d'), statsCtx = statsCanvas.getContext('2d'), skinsCtx = skinsCanvas.getContext('2d'), optionsCtx = optionsCanvas.getContext('2d');
+    const menuCanvas = document.getElementById('menu-canvas'), statsCanvas = document.getElementById('stats-canvas'), skinsCanvas = document.getElementById('skins-canvas'), optionsCanvas = document.getElementById('options-canvas'), creditsCanvas = document.getElementById('credits-canvas');
+    let menuCtx = menuCanvas.getContext('2d'), statsCtx = statsCanvas.getContext('2d'), skinsCtx = skinsCanvas.getContext('2d'), optionsCtx = optionsCanvas.getContext('2d'), creditsCtx = creditsCanvas.getContext('2d');
     let particlesArray = [], mouse = { x: null, y: null, radius: 120 };
 
     function resizeCanvas(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    function resizeAllCanvases() { resizeCanvas(menuCanvas); resizeCanvas(statsCanvas); resizeCanvas(skinsCanvas); resizeCanvas(optionsCanvas); }
+    function resizeAllCanvases() { resizeCanvas(menuCanvas); resizeCanvas(statsCanvas); resizeCanvas(skinsCanvas); resizeCanvas(optionsCanvas); resizeCanvas(creditsCanvas); }
     resizeAllCanvases();
     window.addEventListener('resize', resizeAllCanvases);
     window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
@@ -523,6 +551,7 @@
         else if (isStatsMenuOpen) { activeCtx = statsCtx; activeCanvas = statsCanvas; }
         else if (isSkinsMenuOpen) { activeCtx = skinsCtx; activeCanvas = skinsCanvas; }
         else if (isOptionsMenuOpen) { activeCtx = optionsCtx; activeCanvas = optionsCanvas; }
+        else if (isCreditsMenuOpen) { activeCtx = creditsCtx; activeCanvas = creditsCanvas; }
         if (activeCtx && activeCanvas) {
             activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
             for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(activeCtx); }
@@ -584,7 +613,7 @@
     }
 
     function updateMusicButtonUI(trackName) {
-        if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) musicBtn.innerText = "🔊 Musik: Menü";
+        if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen || isCreditsMenuOpen) musicBtn.innerText = "🔊 Musik: Menü";
         else { const cleanName = trackName.replace(/\.mp3$/i, ''); musicBtn.innerText = `🔊 Musik: ${cleanName}`; }
     }
 
@@ -594,7 +623,7 @@
         } else {
             isMusicPlaying = true;
             if (isOfflineModalActive) musicBtn.innerText = "🔊 Musik: AN (Stumm)";
-            else if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{}); }
+            else if (isMenuOpen || isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen || isCreditsMenuOpen) { applyVolumes(); menuMusic.play().then(() => { musicBtn.innerText = "🔊 Musik: Menü"; }).catch(()=>{}); }
             else { if (currentMusic) { applyVolumes(); currentMusic.play().then(() => { updateMusicButtonUI(playlist[currentTrackIndex]); }).catch(() => { playRandomTrack(); }); } else playRandomTrack(); }
         }
     }
@@ -615,8 +644,8 @@
 
     // VOLLBILD-MENÜ SEITENNAVIGATION
     window.openStartMenu = () => {
-        isMenuOpen = true; isStatsMenuOpen = false; isSkinsMenuOpen = false; isOptionsMenuOpen = false;
-        document.getElementById('stats-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.add('hidden'); document.getElementById('options-menu').classList.add('hidden'); document.getElementById('start-menu').classList.remove('hidden');
+        isMenuOpen = true; isStatsMenuOpen = false; isSkinsMenuOpen = false; isOptionsMenuOpen = false; isCreditsMenuOpen = false;
+        document.getElementById('stats-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.add('hidden'); document.getElementById('options-menu').classList.add('hidden'); document.getElementById('credits-menu').classList.add('hidden'); document.getElementById('start-menu').classList.remove('hidden');
         if (isMusicPlaying && userHasInteracted) {
             if (currentMusic) fadeAudio(currentMusic, 0, 300).then(() => { if (isMenuOpen) currentMusic.pause(); });
             menuMusic.volume = 0; menuMusic.play().then(() => { fadeAudio(menuMusic, 0.15 * musicVolumeFactor, 300); }).catch(()=>{}); musicBtn.innerText = "🔊 Musik: Menü";
@@ -624,8 +653,8 @@
     };
 
     window.continueGame = () => {
-        hasStartedSession = true; isMenuOpen = false; isStatsMenuOpen = false; isSkinsMenuOpen = false; isOptionsMenuOpen = false;
-        document.getElementById('start-menu').classList.add('hidden'); document.getElementById('stats-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.add('hidden'); document.getElementById('options-menu').classList.add('hidden');
+        hasStartedSession = true; isMenuOpen = false; isStatsMenuOpen = false; isSkinsMenuOpen = false; isOptionsMenuOpen = false; isCreditsMenuOpen = false;
+        document.getElementById('start-menu').classList.add('hidden'); document.getElementById('stats-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.add('hidden'); document.getElementById('options-menu').classList.add('hidden'); document.getElementById('credits-menu').classList.add('hidden');
         if (pendingOfflineReward) triggerOfflineRewardVisuals();
         else if (isMusicPlaying && userHasInteracted) {
             fadeAudio(menuMusic, 0, 300).then(() => { if (!isMenuOpen) menuMusic.pause(); });
@@ -639,6 +668,8 @@
     window.closeStatsMenu = () => { openStartMenu(); };
     window.openSkinsMenu = () => { isSkinsMenuOpen = true; isMenuOpen = false; document.getElementById('start-menu').classList.add('hidden'); document.getElementById('skins-menu').classList.remove('hidden'); renderSkinsPage(); };
     window.closeSkinsMenu = () => { openStartMenu(); };
+    window.openCreditsMenu = () => { isCreditsMenuOpen = true; isMenuOpen = false; document.getElementById('start-menu').classList.add('hidden'); document.getElementById('credits-menu').classList.remove('hidden'); };
+    window.closeCreditsMenu = () => { openStartMenu(); };
     
     window.selectSkin = (id) => {
         const skin = availableSkins[id]; if (!skin) return;
@@ -734,7 +765,7 @@
 
     window.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
-            if (isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen) openStartMenu();
+            if (isStatsMenuOpen || isSkinsMenuOpen || isOptionsMenuOpen || isCreditsMenuOpen) openStartMenu();
             else if (!isMenuOpen && !isLoading) openStartMenu();
             else if (isMenuOpen && !document.getElementById('menu-continue-btn').disabled) continueGame();
         }
@@ -890,23 +921,23 @@
         let seed = getDailySeed();
         dailyShopItems = [];
 
-        // Slot 1: Billigster Booster (ca. 3 Tokens, schlechtester)
-        let cost1 = Math.floor(3 + seededRandom(seed, 1) * 2); // 3 - 4 Tokens
-        let mult1 = parseFloat((1.15 + seededRandom(seed, 2) * 0.15).toFixed(2)); // 1.15x - 1.30x
-        let dur1 = Math.floor(5 + seededRandom(seed, 3) * 6); // 5 - 10 Minuten
+        // Slot 1: Billigster Booster
+        let cost1 = Math.floor(3 + seededRandom(seed, 1) * 2);
+        let mult1 = parseFloat((1.15 + seededRandom(seed, 2) * 0.15).toFixed(2));
+        let dur1 = Math.floor(5 + seededRandom(seed, 3) * 6);
         dailyShopItems.push({ id: 's1', name: 'Kleiner Zuckerschub', cost: cost1, mult: mult1, duration: dur1, type: 'common' });
 
         // Slot 2: Mittlerer Booster
-        let cost2 = Math.floor(7 + seededRandom(seed, 4) * 4); // 7 - 10 Tokens
-        let mult2 = parseFloat((1.40 + seededRandom(seed, 5) * 0.35).toFixed(2)); // 1.40x - 1.75x
-        let dur2 = Math.floor(12 + seededRandom(seed, 6) * 6); // 12 - 17 Minuten
+        let cost2 = Math.floor(7 + seededRandom(seed, 4) * 4);
+        let mult2 = parseFloat((1.40 + seededRandom(seed, 5) * 0.35).toFixed(2));
+        let dur2 = Math.floor(12 + seededRandom(seed, 6) * 6);
         dailyShopItems.push({ id: 's2', name: 'Bäcker-Energie', cost: cost2, mult: mult2, duration: dur2, type: 'rare' });
 
-        // Slot 3: Bester / Teuerster Booster (15-20 Tokens, Max 20 Min)
-        let cost3 = Math.floor(15 + seededRandom(seed, 7) * 6); // 15 - 20 Tokens
-        let isUltraRare = seededRandom(seed, 8) > 0.80; // 20% Chance auf ultra seltenen 2.5x
+        // Slot 3: Bester / Teuerster Booster
+        let cost3 = Math.floor(15 + seededRandom(seed, 7) * 6);
+        let isUltraRare = seededRandom(seed, 8) > 0.80;
         let mult3 = isUltraRare ? 2.50 : parseFloat((1.85 + seededRandom(seed, 9) * 0.35).toFixed(2));
-        let dur3 = isUltraRare ? 20 : Math.floor(15 + seededRandom(seed, 10) * 6); // max 20 Minuten
+        let dur3 = isUltraRare ? 20 : Math.floor(15 + seededRandom(seed, 10) * 6);
         dailyShopItems.push({ 
             id: 's3', 
             name: isUltraRare ? '⚡ ULTRA KEKSTRAUSCH (SELTEN!)' : 'Meister-Ofen Boost', 
@@ -958,7 +989,6 @@
         tokens -= item.cost;
         let durationMs = item.duration * 60 * 1000;
         
-        // Wenn bereits ein Booster läuft, wird die Zeit addiert (falls gleicher Mult) oder überschrieben falls besser
         if (Date.now() < activeBooster.endTime && activeBooster.mult >= item.mult) {
             activeBooster.endTime += durationMs;
         } else {
@@ -1065,4 +1095,138 @@
                     if(availableSkins[activeSkinId]) document.getElementById('cookie').src = availableSkins[activeSkinId].src;
                 }
 
-                Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anz
+                Object.keys(buildings).forEach(k => { if(d.b && d.b[k]) buildings[k].anzahl = d.b[k]; buildings[k].kosten = Math.floor(buildings[k].base * Math.pow(1.15, buildings[k].anzahl)); });
+                Object.keys(upgrades).forEach(k => { if(d.u && d.u[k]) upgrades[k].anzahl = d.u[k]; upgrades[k].kosten = Math.floor(upgrades[k].base * Math.pow(2.8, upgrades[k].anzahl)); });
+                
+                if(d.lastSave) {
+                    let secondsOffline = Math.floor((Date.now() - d.lastSave) / 1000);
+                    if(secondsOffline > 30) {
+                        let tempCps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+                        let offlineGain = (tempCps * secondsOffline) * 0.05; 
+                        if(offlineGain > 1) {
+                            cookies += offlineGain; totalEver += offlineGain;
+                            lastOfflineGain = offlineGain; 
+                            document.getElementById('offlineAmount').innerText = format(offlineGain);
+                            pendingOfflineReward = true;
+                        }
+                    }
+                }
+                
+                dbCookiesSnapshot = cookies;
+                document.getElementById('prof-name').innerText = d.username;
+                document.getElementById('user-display-name').innerText = d.username.toUpperCase();
+            }
+            
+            document.getElementById('menu-continue-btn').removeAttribute('disabled');
+            isLoading = false; updateUI();
+            setTimeout(() => { transferProtectionActive = false; }, 5000);
+
+            onSnapshot(docRef, (docSnap) => {
+                if(docSnap.exists() && !isLoading && !transferProtectionActive) {
+                    const data = docSnap.data();
+                    if (data.cookies > dbCookiesSnapshot + 20) {
+                        let amt = data.cookies - dbCookiesSnapshot;
+                        cookies += amt; totalEver += amt;
+                        if (data.lastTransfer && data.lastTransfer.ts > lastTransferProcessed) {
+                            lastTransferProcessed = data.lastTransfer.ts;
+                            let text = `+${format(amt)} Kekse!`;
+                            if (data.lastTransfer.msg) text += `<br><span style="color:#bbb; font-style:italic;">"${data.lastTransfer.msg}"</span>`;
+                            notify(`🎁 VON ${data.lastTransfer.sender.toUpperCase()}`, text, "var(--success)");
+                        } else notify("TRANSFER!", `+${format(amt)} Kekse erhalten!`, "var(--success)");
+                    }
+                    dbCookiesSnapshot = data.cookies;
+                }
+            });
+        } else {
+            document.getElementById('menu-continue-btn').removeAttribute('disabled');
+            isLoading = false; updateUI();
+        }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const n = document.getElementById('regName').value.trim(), e = document.getElementById('regEmail').value.trim(), p = document.getElementById('regPass').value;
+        if(!e || !p) return alert("Bitte mindestens E-Mail und Passwort eingeben!");
+        try {
+            let res; try { res = await signInWithEmailAndPassword(auth, e, p); } catch { 
+                if(!n) return alert("Account existiert nicht. Bitte gib einen Anzeigenamen an, um dich zu registrieren!");
+                res = await createUserWithEmailAndPassword(auth, e, p); 
+            }
+            const docRef = doc(db, "users", res.user.uid); const check = await getDoc(docRef);
+            if(!check.exists()) await setDoc(docRef, { username: n, cookies, totalEver, tokens, rebirthCount, activeSkinId, lastSave: Date.now() }, { merge: true });
+            location.reload();
+        } catch(err) { alert(err.message); }
+    });
+
+    document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+        const email = document.getElementById('regEmail').value.trim();
+        if (!email) return alert("Bitte trage zuerst deine E-Mail-Adresse in das E-Mail-Feld ein!");
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) return alert("Bitte gib eine gültige E-Mail-Adresse ein!");
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            notify("E-MAIL GESENDET!", `Ein Link wurde an ${email} geschickt. Überprüfe auch deinen Spam-Ordner!`, "var(--accent)");
+        } catch(err) {
+            console.error("Firebase Reset Error:", err);
+            switch (err.code) {
+                case 'auth/user-not-found': alert("Fehler: Zu dieser E-Mail-Adresse wurde kein Account gefunden!"); break;
+                case 'auth/invalid-email': alert("Fehler: Die eingegebene E-Mail-Adresse ist ungültig."); break;
+                case 'auth/too-many-requests': alert("Fehler: Zu viele Anfragen auf einmal. Bitte warte kurz."); break;
+                default: alert("Fehler beim Senden: " + err.message);
+            }
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); location.reload(); });
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+        if(confirm("Account wirklich löschen?")) { 
+            try { if(currentUser) { await deleteDoc(doc(db, "users", currentUser.uid)); await deleteUser(currentUser); } location.reload(); } catch(e) { alert(e.message); } 
+        }
+    });
+
+    document.getElementById('traBtn').addEventListener('click', async () => {
+        const target = document.getElementById('traName').value.trim();
+        const amount = Math.floor(parseFloat(document.getElementById('traAmt').value));
+        const msg = document.getElementById('traMsg').value.trim(); 
+        
+        if(!target || isNaN(amount) || amount <= 0 || cookies < amount) return notify("FEHLER", "Ungültige Menge oder zu wenig Kekse!", "var(--danger)");
+        try {
+            const q = query(collection(db, "users"), where("username", "==", target), limit(1)), s = await getDocs(q);
+            if(s.empty) return notify("FEHLER", "User nicht gefunden", "var(--danger)");
+            cookies -= amount; updateUI();
+            await setDoc(doc(db, "users", s.docs[0].id), { 
+                cookies: increment(amount), totalEver: increment(amount),
+                lastTransfer: { sender: currentUserName, msg: msg, ts: Date.now() }
+            }, { merge: true });
+            notify("ERFOLG!", `${format(amount)} gesendet!`, "var(--accent)");
+            document.getElementById('traMsg').value = ''; document.getElementById('traAmt').value = ''; 
+        } catch(e) { notify("FEHLER", e.message, "var(--danger)"); }
+    });
+
+    setInterval(() => {
+        if(isLoading) return; 
+        let baseCps = Object.values(buildings).reduce((a,b) => a + (b.cps * b.anzahl), 0);
+        let cps = baseCps * (Date.now() < activeBooster.endTime ? activeBooster.mult : 1);
+        
+        cookies += cps/10; totalEver += cps/10; dbCookiesSnapshot += cps/10; updateUI();
+        if (document.getElementById('tokenShopModal').style.display === 'block') renderTokenShop();
+
+        allAchs.forEach(a => { 
+            if(!unlockedAchs.includes(a.id)) { 
+                let check = (a.type==='cookies' && totalEver >= a.target) || (a.type==='building' && buildings[a.bid].anzahl >= a.target); 
+                if(check) { 
+                    unlockedAchs.push(a.id); 
+                    tokens++;
+                    notify("🏆 ERFOLG (+1 🪙)!", a.title, "var(--gold)"); 
+                    sounds.ach.play().catch(()=>{}); 
+                    if(document.getElementById('view-achievements').classList.contains('active')) renderAchs();
+                } 
+            } 
+        });
+        if(Math.random() < 0.1) { const r = document.createElement('div'); r.className = 'rain-cookie'; r.innerText = '🍪'; r.style.left = Math.random()*100+'vw'; r.style.animationDuration = '4s'; document.getElementById('rain-container').appendChild(r); setTimeout(() => r.remove(), 4000); }
+    }, 100);
+
+    setInterval(() => { if(currentUser && !isLoading) { const bS = {}, uS = {}; Object.entries(buildings).forEach(([k,v])=>bS[k]=v.anzahl); Object.entries(upgrades).forEach(([k,v])=>uS[k]=v.anzahl); setDoc(doc(db, "users", currentUser.uid), { cookies, totalEver, b: bS, u: uS, unlockedAchs, tokens, rebirthCount, activeBooster, activeSkinId, lastSave: Date.now() }, { merge: true }).then(() => { dbCookiesSnapshot = cookies; }); } }, 10000);
+</script>
+</body>
+</html>
