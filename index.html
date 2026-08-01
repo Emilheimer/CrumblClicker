@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legend v2.6.1</title>
+    <title>Crumbl Clicker: Legend v2.6.2</title>
     <style>
         :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; --info: #3498db; --token: #9b59b6; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
@@ -183,7 +183,64 @@
 </head>
 <body>
 
-<div class="version-tag">v2.6.1 by Kudłæx</div>
+<!-- === DESIGN & HINTERGRUND (Hier kopieren) === -->
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+
+  /* Rotierender Strahlen-Hintergrund */
+  .cookie-background {
+    position: fixed;
+    top: -85%;
+    left: -75%;
+    width: 250%;
+    height: 250%;
+    background: repeating-conic-gradient(
+      from 0deg,
+        #0b1d3a 0deg 15deg,
+        #152e54 15deg 30deg
+    );
+    animation: rotate-bg 60s linear infinite;
+    z-index: -2;
+  }
+
+  /* Drehanimation */
+  @keyframes rotate-bg {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Dunkler Rand (Vignette) */
+  .vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.8) 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
+</style>
+
+<!-- Die beiden Hintergrund-Ebenen -->
+<div class="cookie-background"></div>
+<div class="vignette"></div>
+<!-- ============================================ -->
+
+<style>
+  @keyframes rotateShine {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+</style>
+
+<img src="schein.png" alt="Schein" style="position: absolute; top: 37%; left: 50%; width: 200px; height: 200px; z-index: -1; pointer-events: none; animation: rotateShine 20s linear infinite;">
+
+<div class="version-tag">v2.6.2 by Kudłæx</div>
 <div class="top-right-controls">
     <button id="musicToggleBtn" class="music-toggle-btn">🔇 Musik: AUS</button>
     <button id="menuOpenBtn" class="menu-open-btn" onclick="openStartMenu()">☰</button>
@@ -288,21 +345,21 @@
             <div class="credit-box">
                 <b>🎮 Spiel</b>
                 <p>Crumbl Clicker: Legend</p>
-                <p style="font-size: 0.75rem; color: #777;">Version 2.6.1</p>
+                <p style="font-size: 0.75rem; color: #777;">Version 2.6.2</p>
             </div>
 
-            <div class="option-section-title">Community & Links</div>
+          <!--  <div class="option-section-title">Community & Links</div>
             <div class="credit-box">
                 <b>💬 Discord Community</b>
                 <p>Tritt unserer Bäckerei-Community bei!</p>
                 <a href="#" class="credit-link" onclick="alert('Hier deinen Discord-Link einfügen!')">Discord Server beitreten 🚀</a>
-            </div>
+            </div>-->
             
-            <div class="credit-box">
+          <!--  <div class="credit-box">
                 <b>▶️ YouTube</b>
                 <p>My YouTube Channel.</p>
                 <a href="#" class="credit-link" onclick="alert('www.youtube.com/@Kudlaex')">YouTube besuchen 🔗</a>
-            </div>
+            </div>-->
                         <div class="credit-box">
                 <b>🌐 Webseite & Updates</b>
                 <p>Learn more about new features and patches.</p>
