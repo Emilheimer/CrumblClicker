@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crumbl Clicker: Legend v2.6.2</title>
+    <title>Crumbl Clicker: Legend v2.6.3</title>
     <style>
         :root { --primary: #f1c40f; --bg: #050505; --panel: #111; --text: #eee; --accent: #3498db; --gold: #ffd700; --danger: #e74c3c; --success: #2ecc71; --info: #3498db; --token: #9b59b6; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
@@ -183,7 +183,7 @@
 </head>
 <body>
 
-<!-- === DESIGN & HINTERGRUND (Hier kopieren) === -->
+<!-- === DESIGN & HINTERGRUND === -->
 <style>
   body {
     margin: 0;
@@ -240,7 +240,7 @@
 
 <img src="schein.png" alt="Schein" style="position: absolute; top: 37%; left: 50%; width: 200px; height: 200px; z-index: -1; pointer-events: none; animation: rotateShine 20s linear infinite;">
 
-<div class="version-tag">v2.6.2 by Kudłæx</div>
+<div class="version-tag">v2.6.3 by Kudłæx</div>
 <div class="top-right-controls">
     <button id="musicToggleBtn" class="music-toggle-btn">🔇 Musik: AUS</button>
     <button id="menuOpenBtn" class="menu-open-btn" onclick="openStartMenu()">☰</button>
@@ -345,22 +345,10 @@
             <div class="credit-box">
                 <b>🎮 Spiel</b>
                 <p>Crumbl Clicker: Legend</p>
-                <p style="font-size: 0.75rem; color: #777;">Version 2.6.2</p>
+                <p style="font-size: 0.75rem; color: #777;">Version 2.6.3</p>
             </div>
 
-          <!--  <div class="option-section-title">Community & Links</div>
             <div class="credit-box">
-                <b>💬 Discord Community</b>
-                <p>Tritt unserer Bäckerei-Community bei!</p>
-                <a href="#" class="credit-link" onclick="alert('Hier deinen Discord-Link einfügen!')">Discord Server beitreten 🚀</a>
-            </div>-->
-            
-          <!--  <div class="credit-box">
-                <b>▶️ YouTube</b>
-                <p>My YouTube Channel.</p>
-                <a href="#" class="credit-link" onclick="alert('www.youtube.com/@Kudlaex')">YouTube besuchen 🔗</a>
-            </div>-->
-                        <div class="credit-box">
                 <b>🌐 Webseite & Updates</b>
                 <p>Learn more about new features and patches.</p>
                 <a href="#" class="credit-link" onclick="alert('link??')">Webseite besuchen 🔗</a>
@@ -466,11 +454,26 @@
 </div>
 
 <nav id="main-nav">
-    <div class="nav-btn active" data-view="view-keks"><span>🍪</span><br><span>HOME</span></div>
-    <div class="nav-btn" data-view="view-shop"><span>🏪</span><br><span>SHOP</span></div>
-    <div class="nav-btn" data-view="view-achievements"><span>🏆</span><br><span>ERFOLGE</span></div>
-    <div class="nav-btn" data-view="view-leaderboard"><span>📊</span><br><span>RANK</span></div>
-    <div class="nav-btn" data-view="view-profile"><span>📦</span><br><span>TRANSFER</span></div>
+    <div class="nav-btn active" data-view="view-keks">
+        <img src="home.png" alt="Home" class="nav-icon"><br>
+        <span>HOME</span>
+    </div>
+    <div class="nav-btn" data-view="view-shop">
+        <img src="shop.png" alt="Shop" class="nav-icon"><br>
+        <span>SHOP</span>
+    </div>
+    <div class="nav-btn" data-view="view-achievements">
+        <img src="erfolge.png" alt="Erfolge" class="nav-icon"><br>
+        <span>ERFOLGE</span>
+    </div>
+    <div class="nav-btn" data-view="view-leaderboard">
+        <img src="rank.png" alt="Rank" class="nav-icon"><br>
+        <span>RANK</span>
+    </div>
+    <div class="nav-btn" data-view="view-profile">
+        <img src="transfer.png" alt="Transfer" class="nav-icon"><br>
+        <span>TRANSFER</span>
+    </div>
 </nav>
 
 <script type="module">
@@ -503,6 +506,14 @@
     // Audio-Lautstärken
     let musicVolumeFactor = 0.5;
     let vfxVolumeFactor = 0.5;
+
+    // Helper Funktion: Prüft ob der Icon-String ein Bild ist
+    function renderIconHTML(icon, size = '40px') {
+        if (typeof icon === 'string' && (icon.endsWith('.png') || icon.endsWith('.jpg') || icon.endsWith('.webp') || icon.endsWith('.svg'))) {
+            return `<img src="${icon}" alt="Icon" style="width: ${size}; height: ${size}; object-fit: contain;">`;
+        }
+        return icon;
+    }
 
     // Skin System
     let activeSkinId = "default";
@@ -807,11 +818,11 @@
             <div class="stats-section-title">Deine Gebäude (${totalBuildings} gesamt)</div>
             <div class="stats-grid-container">`;
         Object.entries(buildings).forEach(([id, b]) => {
-            let bCps = b.cps * b.anzahl; html += `<div class="stats-grid-item"><span>${b.icon} ${b.name}:</span><b>${b.anzahl}x <small style="color:#666; font-size:0.7rem;">(+${format(bCps)} CPS)</small></b></div>`;
+            let bCps = b.cps * b.anzahl; html += `<div class="stats-grid-item"><span>${renderIconHTML(b.icon, '20px')} ${b.name}:</span><b>${b.anzahl}x <small style="color:#666; font-size:0.7rem;">(+${format(bCps)} CPS)</small></b></div>`;
         });
         html += `</div><div class="stats-section-title">Deine Upgrades (${totalUpgrades} gesamt)</div><div class="stats-grid-container">`;
         Object.entries(upgrades).forEach(([id, u]) => {
-            let uPower = u.anzahl * u.power; html += `<div class="stats-grid-item"><span>${u.icon} ${u.name}:</span><b>Stufe ${u.anzahl} <small style="color:#666; font-size:0.7rem;">(+${format(uPower)} CPC)</small></b></div>`;
+            let uPower = u.anzahl * u.power; html += `<div class="stats-grid-item"><span>${renderIconHTML(u.icon, '20px')} ${u.name}:</span><b>Stufe ${u.anzahl} <small style="color:#666; font-size:0.7rem;">(+${format(uPower)} CPC)</small></b></div>`;
         });
         html += `</div>`; contentDiv.innerHTML = html;
     }
@@ -834,26 +845,27 @@
         }
     });
 
+    // Hier kannst du entweder Emojis ODER Bildpfade (.png, .jpg, etc.) eintragen!
     const buildings = {
-        maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "🖱️" },
-        oma: { name: "Oma", kosten: 100, base: 100, cps: 1, anzahl: 0, icon: "👵" },
-        farm: { name: "Farm", kosten: 1100, base: 1100, cps: 8, anzahl: 0, icon: "🚜" },
-        mine: { name: "Mine", kosten: 12000, base: 12000, cps: 47, anzahl: 0, icon: "⛏️" },
-        fabrik: { name: "Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, icon: "🏭" },
-        bank: { name: "Bank", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, icon: "🏦" },
-        tempel: { name: "Tempel", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, icon: "🏛️" },
-        zauberer: { name: "Zauberturm", kosten: 330000000, base: 330000000, cps: 44000, anzahl: 0, icon: "🧙" },
-        rakete: { name: "Rakete", kosten: 5100000000, base: 5100000000, cps: 260000, anzahl: 0, icon: "🚀" },
-        zeit: { name: "Zeitmaschine", kosten: 75000000000, base: 75000000000, cps: 1600000, anzahl: 0, icon: "⌛" },
-        gott: { name: "Keks-Gott", kosten: 999999999999, base: 999999999999, cps: 10000000, anzahl: 0, icon: "👼" }
+        maus: { name: "Maus", kosten: 15, base: 15, cps: 0.2, anzahl: 0, icon: "click.png" },
+        oma: { name: "Oma", kosten: 100, base: 100, cps: 1, anzahl: 0, icon: "grandma.png" },
+        farm: { name: "Farm", kosten: 1100, base: 1100, cps: 8, anzahl: 0, icon: "tractor.png" },
+        mine: { name: "Mine", kosten: 12000, base: 12000, cps: 47, anzahl: 0, icon: "hacke.png" },
+        fabrik: { name: "Fabrik", kosten: 130000, base: 130000, cps: 260, anzahl: 0, icon: "fabrik.png" },
+        bank: { name: "Bank", kosten: 1400000, base: 1400000, cps: 1400, anzahl: 0, icon: "bank.png" },
+        tempel: { name: "Tempel", kosten: 20000000, base: 20000000, cps: 7800, anzahl: 0, icon: "tempel.png" },
+        zauberer: { name: "Zauberturm", kosten: 330000000, base: 330000000, cps: 44000, anzahl: 0, icon: "zauber.png" },
+        rakete: { name: "Rakete", kosten: 5100000000, base: 5100000000, cps: 260000, anzahl: 0, icon: "rakete.png" },
+        zeit: { name: "Zeitmaschine", kosten: 75000000000, base: 75000000000, cps: 1600000, anzahl: 0, icon: "sand.png" },
+        gott: { name: "Keks-Gott", kosten: 999999999999, base: 999999999999, cps: 10000000, anzahl: 0, icon: "gott.png" }
     };
 
     const upgrades = {
-        trainer: { name: "Klick-Trainer", kosten: 50, base: 50, power: 1, anzahl: 0, icon: "💪" },
-        ofen: { name: "Turbo-Ofen", kosten: 5000, base: 5000, power: 15, anzahl: 0, icon: "🔥" },
-        goldmaus: { name: "Platin-Maus", kosten: 100000, base: 100000, power: 100, anzahl: 0, icon: "🖱️✨" },
-        finger: { name: "Diamond Finger", kosten: 2500000, base: 2500000, power: 1000, anzahl: 0, icon: "💎" },
-        matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "🕶️" }
+        trainer: { name: "Klick-Trainer", kosten: 50, base: 50, power: 1, anzahl: 0, icon: "cep.png" },
+        ofen: { name: "Turbo-Ofen", kosten: 5000, base: 5000, power: 15, anzahl: 0, icon: "turbo.png" },
+        goldmaus: { name: "Platin-Maus", kosten: 100000, base: 100000, power: 100, anzahl: 0, icon: "platin.png" },
+        finger: { name: "Diamond Finger", kosten: 2500000, base: 2500000, power: 1000, anzahl: 0, icon: "dia.png" },
+        matrix: { name: "Cookie Matrix", kosten: 100000000, base: 100000000, power: 25000, anzahl: 0, icon: "matrix.png" }
     };
 
     let allAchs = [];
@@ -915,13 +927,13 @@
     function renderShop() {
         document.getElementById('buildingsContainer').innerHTML = Object.entries(buildings).map(([id, b]) => `
             <div class="shop-item">
-                <div style="font-size:2rem">${b.icon}</div>
+                <div style="font-size:2rem; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">${renderIconHTML(b.icon, '36px')}</div>
                 <div class="item-info"><b>${b.name} (${b.anzahl})</b><br><span class="item-price">${format(b.kosten)} 🍪</span></div>
                 <button class="buy-btn" ${cookies < b.kosten ? 'disabled' : ''} onclick="buyB('${id}')">KAUFEN</button>
             </div>`).join('');
         document.getElementById('upgradesContainer').innerHTML = Object.entries(upgrades).map(([id, u]) => `
             <div class="shop-item" style="border-color: var(--accent)">
-                <div style="font-size:2rem">${u.icon}</div>
+                <div style="font-size:2rem; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">${renderIconHTML(u.icon, '36px')}</div>
                 <div class="item-info"><b>${u.name} (Lvl ${u.anzahl})</b><br><span class="item-price">${format(u.kosten)} 🍪</span></div>
                 <button class="buy-btn" style="background:var(--accent)" ${cookies < u.kosten ? 'disabled' : ''} onclick="buyU('${id}')">UPGRADE</button>
             </div>`).join('');
@@ -940,14 +952,16 @@
         } else {
             rebBtn.disabled = true;
             rebBtn.innerText = `🔄 Rebirth (${unlockedAchs.length}/100)`;
+   }
+            document.getElementById('achievementsContainer').innerHTML = allAchs.map(a => `
+                <div class="ach-card ${unlockedAchs.includes(a.id) ? 'unlocked' : ''}">
+                    <div style="font-size:1.6rem;">
+                        <img src="${unlockedAchs.includes(a.id) ? 'erfolge.png' : 'lock.png'}">
+                    </div>
+                    <b>${a.title}</b>
+                    <small>${a.desc}</small>
+                </div>`).join('');
         }
-        document.getElementById('achievementsContainer').innerHTML = allAchs.map(a => `
-            <div class="ach-card ${unlockedAchs.includes(a.id)?'unlocked':''}">
-                <div style="font-size:1.6rem;">${unlockedAchs.includes(a.id)?'🏆':'🔒'}</div>
-                <b>${a.title}</b>
-                <small>${a.desc}</small>
-            </div>`).join('');
-    }
 
     // ================= REBIRTH SYSTEM =================
     window.triggerRebirth = () => {
